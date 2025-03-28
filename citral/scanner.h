@@ -41,3 +41,4 @@ char scanner_peek(scannerState* state);
 uint8_t scanner_is_at_end(scannerState* state);
 void scanner_insert_token(scannerState* state, scannerToken token);
 void scanner_print_token(scannerToken tok);
+void scanner_dump_print_tokens(scannerState* state);

@@ -1,6 +1,7 @@
 #include "allocator.h"
 #include <stdio.h>
 #include "scanner.h"
+#include "config.h"
 //tests for this file are done by hand.
 
 char* cli_get_str() {
@@ -26,6 +27,11 @@ char* cli_get_str() {
 
 void load_source(char* src) {
 	//todo: scan buf into a scannerState
+	scannerState* state = scanner_scan_source(src, strlen(src));
+#ifdef CLI_DEBUG
+	scanner_dump_print_tokens(state);
+#endif
+
 	//todo: parse the scannerState into a valid AST
 	//todo: ast optimization pass 1: prune unreachable code
 	//todo: convert the AST into a DAG
