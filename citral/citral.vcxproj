@@ -49,6 +49,7 @@
     <ProjectGuid>{b08ab569-206e-4455-9656-43cc033bf11f}</ProjectGuid>
     <RootNamespace>interpreterCheck2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>citral</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
