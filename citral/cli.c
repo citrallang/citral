@@ -94,7 +94,6 @@ void repl() {
 			for (int j = 0; j < strlen(strings[i])+1; j++) {
 				char toInsert = strings[i][j];
 				if (toInsert == '\0') {
-					printf("nl inserted\n");
 					toInsert = '\n';
 				}
 				buf[inc] = toInsert;
