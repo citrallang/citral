@@ -48,7 +48,6 @@ scannerState* scanner_create_state(char* buf, size_t bufSize) {
 	state->buf = buf;
 	state->bufCapacity = bufSize;
 	state->cur = buf;
-	state->numToks = 0;
 	state->toksCapacity = 16;
 	state->tokBuf = xmalloc(sizeof(scannerToken) * 16);
 	state->curLine = 1;
@@ -62,8 +61,10 @@ scannerState* scanner_create_state(char* buf, size_t bufSize) {
 //	TOKEN_EOF,
 //} TokenType;
 
-void scanner_error(scannerState* state) {
-
+void scanner_error(scannerState* state, char* msg) {
+	printf(msg);
+	printf("\n");
+	state->hadError = 1;
 }
 
 scannerToken scanner_next_token(scannerState* state) {
@@ -99,6 +100,10 @@ scanner_start_of_next_token:
 		}
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_SLASHEQ, 2);
+		}
+		if (scanner_match(state, '*')) {
+			scanner_long_comment(state);
+			goto scanner_start_of_next_token;
 		}
 		return scanner_create_token(state, TOKEN_SLASH, 1);
 	}
@@ -213,5 +218,21 @@ void scanner_short_comment(scannerState* state) {
 	state->curLine++;
 }
 void scanner_long_comment(scannerState* state) {
-
+	int lineAtStart = state->curLine;
+	while (!scanner_is_at_end(state)) {
+		if (scanner_match(state, '*') && scanner_match(state, '/')) {
+			return;
+		}
+		if (scanner_match(state, '\n')) {
+			state->curLine++;
+		}
+		scanner_advance(state);
+	}
+	char* buf = xmalloc(32);
+	_itoa_s(lineAtStart, buf, 32, 10);
+	char* first = "Unterminated long comment at line ";
+	char* str = xmalloc(64);
+	memcpy(str, first, strlen(first));
+	strcat_s(str, 64, buf);
+	scanner_error(state, str);
 }

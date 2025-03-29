@@ -29,6 +29,7 @@ typedef struct scannerState {
 	scannerToken* tokBuf;
 	size_t numToks;
 	size_t toksCapacity;
+	int hadError;
 } scannerState;
 scannerState* scanner_scan_source(char* src, size_t bufSize);
 scannerState* scanner_create_state(char* buf, size_t bufSize);
