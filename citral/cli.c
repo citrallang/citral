@@ -77,10 +77,6 @@ void repl() {
 				xxrealloc(&strings, sizeof(char*) * maxStrs * 2);
 			}
 			if (str[0] == '\0') {
-				printf("\n\n\n");
-				for (int i = 0; i < numStrs; i++) {
-					printf("\t%s\n", strings[i]);
-				}
 				break;
 			}
 			int len = (int)strlen(str);
