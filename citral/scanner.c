@@ -22,7 +22,7 @@ char scanner_match(scannerState* state, char matchAgainst) {
 }
 
 uint8_t scanner_is_at_end(scannerState* state) {
-	if ((state->cur - state->buf) > (long long)state->bufCapacity) {
+	if ((state->cur - state->buf) >= state->bufCapacity) {
 		return 1;
 	}
 	return 0;
@@ -67,12 +67,13 @@ void scanner_error(scannerState* state) {
 }
 
 scannerToken scanner_next_token(scannerState* state) {
-	scanner_start_of_next_token:
+scanner_start_of_next_token:
 	char next = scanner_advance(state);
-	if (next == 0) {
-		return;
-	}
 	switch (next) {
+	case '\0': {
+		scannerToken tok = scanner_create_token(state, TOKEN_EOF, 0);
+		return tok;
+	}
 	case '+': {
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_PLUSEQ, 2);
@@ -132,7 +133,7 @@ scannerToken scanner_next_token(scannerState* state) {
 	}
 
 	default: {
-		printf("Unrecognized character at line %llu. Character: %c\n", state->curLine, *state->cur);
+		printf("Unrecognized character at line %llu. Character: %c %d\n", state->curLine, next, next);
 		goto scanner_start_of_next_token;
 	}
 	}
@@ -156,10 +157,12 @@ scannerState* scanner_scan_source(char* src, size_t bufSize) {
 		.posInSrc = NULL,
 		.numChars = 0,
 	};
+	scanner_insert_token(state, last);
 	while (last.type != TOKEN_EOF) {
 		last = scanner_next_token(state);
 		scanner_insert_token(state, last);
 	}
+	return state;
 }
 
 void scanner_dump_print_tokens(scannerState* state) {

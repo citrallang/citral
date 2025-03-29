@@ -88,21 +88,21 @@ void repl() {
 			strings[numStrs] = str;
 			numStrs++;
 		}
-		char* buf = xmalloc(totalStrLen);
-#ifdef CLI_DEBUG
+		char* buf = xmalloc(totalStrLen+1);
 		size_t inc = 0;
 		for (int i = 0; i < numStrs; i++) {
-			for (int j = 0; j < strlen(strings[i]); j++) {
+			for (int j = 0; j < strlen(strings[i])+1; j++) {
 				char toInsert = strings[i][j];
 				if (toInsert == '\0') {
+					printf("nl inserted\n");
 					toInsert = '\n';
 				}
 				buf[inc] = toInsert;
 				inc++;
 			}
 		}
+		buf[inc] = '\0';
 		load_source(buf);
-#endif
 	}
 }
 
