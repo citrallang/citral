@@ -21,6 +21,23 @@ char scanner_match(scannerState* state, char matchAgainst) {
 	return 0;
 }
 
+char scanner_expect(scannerState* state, char expectThis) {
+	char response = scanner_advance(state);
+	if (response != expectThis) {
+		char* buf = xmalloc(128);
+		if (response == '\n') {
+			snprintf(buf, 128, "Expected %c after %c at line %d, found \\n.", expectThis, *(state->cur - 2), state->curLine);
+			state->curLine++;
+			scanner_error(state, buf, state->cur - 2, 1, state->curLine);
+		}
+		else {
+			snprintf(buf, 128, "Expected %c after %c at line %d, found %c.", expectThis, *(state->cur - 2), state->curLine, response);
+			scanner_error(state, buf, state->cur - 2, 2, state->curLine);
+		}
+	}
+	return response;
+}
+
 uint8_t scanner_is_at_end(scannerState* state) {
 	if ((state->cur - state->buf) >= (long long)state->bufCapacity) {
 		return 1;
@@ -55,11 +72,6 @@ scannerState* scanner_create_state(char* buf, size_t bufSize) {
 }
 
 
-//typedef enum TokenType {
-//	TOKEN_AMPAMP, TOKEN_BARBAR,
-//
-//	TOKEN_EOF,
-//} TokenType;
 
 void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
 	printf(msg);
@@ -126,17 +138,23 @@ scanner_start_of_next_token:
 		}
 		return scanner_create_token(state, TOKEN_PERCENT, 1);
 	}
+	case '=': {
+		if (scanner_match(state, '=')) {
+			return scanner_create_token(state, TOKEN_EQEQ, 2);
+		}
+		return scanner_create_token(state, TOKEN_EQ, 1);
+	}
 	case '^': {
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_CARETEQ, 2);
 		}
 		return scanner_create_token(state, TOKEN_CARET, 1);
 	}
-	case '=': {
-		if (scanner_match(state, '=')) {
-			return scanner_create_token(state, TOKEN_EQEQ, 2);
+	case '&': {
+		if (scanner_expect(state, '&') == '&') {
+			return scanner_create_token(state, TOKEN_AMPAMP, 2);
 		}
-		return scanner_create_token(state, TOKEN_EQ, 1);
+		goto scanner_start_of_next_token;
 	}
 	case '!': {
 		if (scanner_match(state, '=')) {
@@ -241,7 +259,9 @@ void scanner_long_comment(scannerState* state) {
 		if (scanner_match(state, '\n')) {
 			state->curLine++;
 		}
-		scanner_advance(state);
+		else {
+			scanner_advance(state);
+		}
 	}
 	char* buf = xmalloc(128);
 	snprintf(buf, 128, "Unterminated long comment at line %d", lineAtStart);

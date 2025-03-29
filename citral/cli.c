@@ -34,7 +34,7 @@ void load_source(char* src) {
 #ifdef CLI_DEBUG
 	scanner_dump_print_tokens(state);
 #endif
-
+	
 	//todo: parse the scannerState into a valid AST
 	//todo: ast optimization pass 1: prune unreachable code
 	//todo: convert the AST into a DAG
