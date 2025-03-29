@@ -8,7 +8,7 @@ Citral is a general-purpose, typed (with inference) language written in C. It fe
 
 ## TODO:
 
-Compiler todos are located in cli.c. For now, a working interpreter would be the goal.
+Compiler todos are located in cli.c. For now, a working interpreter is the goal.
 
 Syntax needs to be developed and a grammar needs to be created.
 
