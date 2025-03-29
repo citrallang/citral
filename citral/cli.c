@@ -47,7 +47,7 @@ void load_source(char* src) {
 	//todo: asm optimization pass 3: pattern recognizing chunk optimization
 	//todo: asm optimization pass 4: aggressive register allocation decisions. find ways to reuse registers
 	//todo: convert to asm
-	//todo: assemble with NASM
+	//todo: assemble
 	//todo: link to standard library (i need to make a standard library)
 	//todo: run code
 }
