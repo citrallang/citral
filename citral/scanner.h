@@ -49,3 +49,5 @@ scannerToken scanner_number(scannerState* state, char first);
 scannerToken scanner_identifier(scannerState* state, char first);
 void scanner_short_comment(scannerState* state);
 void scanner_long_comment(scannerState* state);
+int scanner_isAlpha(char isThis);
+int scanner_isNumeric(char isThis);

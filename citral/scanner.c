@@ -173,6 +173,10 @@ scanner_start_of_next_token:
 		goto scanner_start_of_next_token;
 	}
 
+	case '"': {
+		return scanner_string(state, next);
+	}
+
 	default: {
 		char* buf = xmalloc(128);
 		snprintf(buf, 128, "Unrecognized character at line %d. Character: %c %d\n", state->curLine, next, next);
@@ -236,6 +240,12 @@ void scanner_print_token(scannerToken tok) {
 	printf("Line %d\t%.*s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc);
 }
 
+int scanner_isAlpha(char isThis) {
+	return isThis >= 'A' && isThis <= 'z';
+}
+int scanner_isNumeric(char isThis) {
+	return isThis >= '0' && isThis <= '9';
+}
 
 scannerToken scanner_string(scannerState* state, char first) {
 	
@@ -246,6 +256,7 @@ scannerToken scanner_number(scannerState* state, char first) {
 scannerToken scanner_identifier(scannerState* state, char first) {
 
 }
+
 void scanner_short_comment(scannerState* state) {
 	do {} while (scanner_advance(state) != '\n' && !scanner_is_at_end(state));
 	state->curLine++;
