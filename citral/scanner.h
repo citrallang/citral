@@ -12,7 +12,7 @@ typedef enum TokenType {
 
 	TOKEN_STRING, TOKEN_NUMBER, TOKEN_IDENTIFIER,
 
-	TOKEN_EOF, TOKEN_START,
+	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
 } TokenType;
 
 typedef struct scannerToken {
@@ -31,6 +31,7 @@ typedef struct scannerState {
 	size_t toksCapacity;
 	int hadError;
 } scannerState;
+void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
 scannerState* scanner_scan_source(char* src, size_t bufSize);
 scannerState* scanner_create_state(char* buf, size_t bufSize);
 scannerToken scanner_next_token(scannerState* state);

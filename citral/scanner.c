@@ -61,10 +61,17 @@ scannerState* scanner_create_state(char* buf, size_t bufSize) {
 //	TOKEN_EOF,
 //} TokenType;
 
-void scanner_error(scannerState* state, char* msg) {
+void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
 	printf(msg);
 	printf("\n");
 	state->hadError = 1;
+	scannerToken tok = {
+		.line = lineInSrc,
+		.numChars = numChars,
+		.posInSrc = posInSrc,
+		.type = TOKEN_ERROR
+	};
+	scanner_insert_token(state, tok);
 }
 
 scannerToken scanner_next_token(scannerState* state) {
@@ -148,7 +155,10 @@ scanner_start_of_next_token:
 	}
 
 	default: {
-		printf("Unrecognized character at line %d. Character: %c %d\n", state->curLine, next, next);
+		char* buf = xmalloc(128);
+		snprintf(buf, 128, "Unrecognized character at line %d. Character: %c %d\n", state->curLine, next, next);
+		scanner_error(state, buf, state->cur - 1, 1, state->curLine);
+		free(buf);
 		goto scanner_start_of_next_token;
 	}
 	}
@@ -196,6 +206,10 @@ void scanner_print_token(scannerToken tok) {
 		printf("End of file\n");
 		return;
 	}
+	case TOKEN_ERROR: {
+		printf("Line %d\tERROR\t%.*s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc);
+		return;
+	}
 	default: {
 		break;
 	}
@@ -219,6 +233,7 @@ void scanner_short_comment(scannerState* state) {
 }
 void scanner_long_comment(scannerState* state) {
 	int lineAtStart = state->curLine;
+	char* start = state->cur - 2;
 	while (!scanner_is_at_end(state)) {
 		if (scanner_match(state, '*') && scanner_match(state, '/')) {
 			return;
@@ -228,11 +243,8 @@ void scanner_long_comment(scannerState* state) {
 		}
 		scanner_advance(state);
 	}
-	char* buf = xmalloc(32);
-	_itoa_s(lineAtStart, buf, 32, 10);
-	char* first = "Unterminated long comment at line ";
-	char* str = xmalloc(64);
-	memcpy(str, first, strlen(first));
-	strcat_s(str, 64, buf);
-	scanner_error(state, str);
+	char* buf = xmalloc(128);
+	snprintf(buf, 128, "Unterminated long comment at line %d", lineAtStart);
+	scanner_error(state, buf, start, 2, lineAtStart);
+	free(buf);
 }
