@@ -22,7 +22,7 @@ char scanner_match(scannerState* state, char matchAgainst) {
 }
 
 uint8_t scanner_is_at_end(scannerState* state) {
-	if ((state->cur - state->buf) >= state->bufCapacity) {
+	if ((state->cur - state->buf) >= (long long)state->bufCapacity) {
 		return 1;
 	}
 	return 0;
@@ -182,6 +182,19 @@ void scanner_dump_print_tokens(scannerState* state) {
 }
 
 void scanner_print_token(scannerToken tok) {
+	switch (tok.type) {
+	case TOKEN_START:{
+		printf("Start of file\n");
+		return;;
+	}
+	case TOKEN_EOF: {
+		printf("End of file\n");
+		return;
+	}
+	default: {
+		break;
+	}
+	}
 	printf("Line %d\t%.*s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc);
 }
 
