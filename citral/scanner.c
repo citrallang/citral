@@ -34,6 +34,7 @@ char scanner_expect(scannerState* state, char expectThis) {
 			snprintf(buf, 128, "Expected %c after %c at line %d, found %c.", expectThis, *(state->cur - 2), state->curLine, response);
 			scanner_error(state, buf, state->cur - 2, 2, state->curLine);
 		}
+		free(buf);
 	}
 	return response;
 }
