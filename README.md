@@ -2,7 +2,7 @@
 
 All the following are plans that may change, and likely are not implemented.
 
-Citral is a general-purpose, typed (with inference) language written in C. It features a garbage collector, interoperability with several major languages (hopefully), and a twin compiler/interpreter optimized for (and will initially only work for) x86-64 Windows.
+Citral is a general-purpose, typed (with inference) language written in C. It features a garbage collector, interoperability with several major languages (hopefully), and a twin compiler/interpreter. This does not mean JIT.
 
 
 
