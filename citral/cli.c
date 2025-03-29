@@ -14,6 +14,9 @@ char* cli_get_str() {
 		if (c == '\n') {
 			xxrealloc(&buf, posInBuf + 1);
 			buf[posInBuf] = 0;
+			if (posInBuf == 0) {
+				
+			}
 			return buf;
 		}
 		buf[posInBuf] = c;
@@ -73,10 +76,6 @@ void repl() {
 			if (numStrs >= maxStrs) {
 				xxrealloc(&strings, sizeof(char*) * maxStrs * 2);
 			}
-			int len = (int)strlen(str);
-			totalStrLen += len + 1;
-			strings[numStrs] = str;
-			numStrs++;
 			if (str[0] == '\0') {
 				printf("\n\n\n");
 				for (int i = 0; i < numStrs; i++) {
@@ -84,11 +83,16 @@ void repl() {
 				}
 				break;
 			}
+			int len = (int)strlen(str);
+			totalStrLen += len + 1;
+			strings[numStrs] = str;
+			numStrs++;
 		}
 		char* buf = xmalloc(totalStrLen);
+#ifdef CLI_DEBUG
 		size_t inc = 0;
 		for (int i = 0; i < numStrs; i++) {
-			for (int j = 0; j < strlen(strings[i]) + 1; j++) {
+			for (int j = 0; j < strlen(strings[i]); j++) {
 				char toInsert = strings[i][j];
 				if (toInsert == '\0') {
 					toInsert = '\n';
@@ -98,6 +102,7 @@ void repl() {
 			}
 		}
 		load_source(buf);
+#endif
 	}
 }
 

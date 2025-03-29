@@ -2,6 +2,9 @@
 #include "allocator.h"
 #include <stdio.h>
 char scanner_advance(scannerState* state) {
+	if (scanner_is_at_end(state)) {
+		return 0;
+	}
 	return *(state->cur++);
 }
 
@@ -19,7 +22,7 @@ char scanner_match(scannerState* state, char matchAgainst) {
 }
 
 uint8_t scanner_is_at_end(scannerState* state) {
-	if (((long long)state->cur - (long long)state->buf) > (long long)state->bufCapacity) {
+	if ((state->cur - state->buf) > (long long)state->bufCapacity) {
 		return 1;
 	}
 	return 0;
@@ -129,7 +132,7 @@ scannerToken scanner_next_token(scannerState* state) {
 	}
 
 	default: {
-		printf("Unrecognized character at line %llu. Character: %c", state->curLine, *state->cur);
+		printf("Unrecognized character at line %llu. Character: %c\n", state->curLine, *state->cur);
 		goto scanner_start_of_next_token;
 	}
 	}
