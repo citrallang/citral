@@ -75,18 +75,28 @@ scanner_start_of_next_token:
 		return tok;
 	}
 	case '+': {
+		if (scanner_match(state, '+')) {
+			return scanner_create_token(state, TOKEN_PLUSPLUS, 2);
+		}
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_PLUSEQ, 2);
 		}
 		return scanner_create_token(state, TOKEN_PLUS, 1);
 	}
 	case '-': {
+		if (scanner_match(state, '-')) {
+			return scanner_create_token(state, TOKEN_MINUSMINUS, 2);
+		}
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_MINUSEQ, 2);
 		}
 		return scanner_create_token(state, TOKEN_MINUS, 1);
 	}
 	case '/': {
+		if (scanner_match(state, '/')) {
+			scanner_short_comment(state);
+			goto scanner_start_of_next_token;
+		}
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_SLASHEQ, 2);
 		}
@@ -133,7 +143,7 @@ scanner_start_of_next_token:
 	}
 
 	default: {
-		printf("Unrecognized character at line %llu. Character: %c %d\n", state->curLine, next, next);
+		printf("Unrecognized character at line %d. Character: %c %d\n", state->curLine, next, next);
 		goto scanner_start_of_next_token;
 	}
 	}
@@ -173,4 +183,22 @@ void scanner_dump_print_tokens(scannerState* state) {
 
 void scanner_print_token(scannerToken tok) {
 	printf("Line %d\t%.*s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc);
+}
+
+
+scannerToken scanner_string(scannerState* state, char first) {
+	
+}
+scannerToken scanner_number(scannerState* state, char first) {
+
+}
+scannerToken scanner_identifier(scannerState* state, char first) {
+
+}
+void scanner_short_comment(scannerState* state) {
+	do {} while (scanner_advance(state) != '\n' && !scanner_is_at_end(state));
+	state->curLine++;
+}
+void scanner_long_comment(scannerState* state) {
+
 }
