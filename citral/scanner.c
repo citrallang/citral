@@ -63,11 +63,12 @@ scannerState* scanner_spawn_state() {
 
 void scanner_free_state(scannerState* state) {
 	free(state->tokBuf);
-	free(state->buf);
+	if (state->isSrcHeap)
+		free(state->buf);
 	free(state);
 }
 
-scannerState* scanner_create_state(char* buf, size_t bufSize) {
+scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap) {
 	scannerState* state = xmalloc(sizeof(scannerState));
 	state->buf = buf;
 	state->bufCapacity = bufSize;
@@ -75,6 +76,7 @@ scannerState* scanner_create_state(char* buf, size_t bufSize) {
 	state->toksCapacity = 16;
 	state->tokBuf = xmalloc(sizeof(scannerToken) * 16);
 	state->curLine = 1;
+	state->isSrcHeap = isHeap;
 	return state;
 }
 
@@ -231,8 +233,8 @@ void scanner_insert_token(scannerState* state, scannerToken token) {
 	state->tokBuf[state->numToks++] = token;
 }
 
-scannerState* scanner_scan_source(char* src, size_t bufSize) {
-	scannerState* state = scanner_create_state(src, bufSize);
+scannerState* scanner_scan_source(char* src, size_t bufSize, int isHeap) {
+	scannerState* state = scanner_create_state(src, bufSize, isHeap);
 	scannerToken last = {
 		.type = TOKEN_START,
 		.posInSrc = NULL,
@@ -296,12 +298,18 @@ scannerToken scanner_short_string(scannerState* state, char first) {
 
 scannerToken scanner_number(scannerState* state, char current) {
 	uint8_t wasFloat = 0;
-	int len = 1;
-	while (current = scanner_advance(state)) {
-		
+	int len = 2;
+	if (current == '.') {
+		wasFloat = 1;
 	}
-	//perror("scanner_number is unimplemented");
-	//exit(4);
+	while (current = scanner_advance(state)) {
+		if (!scanner_is_numeric(current) && current != '.') {
+			return scanner_create_token(state, TOKEN_INT + wasFloat, len);
+		}
+		wasFloat = wasFloat || current == '.';
+		len++;
+	}
+	return scanner_create_token(state, TOKEN_ERROR, 0);
 }
 
 scannerToken scanner_identifier(scannerState* state, char current) {

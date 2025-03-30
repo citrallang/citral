@@ -28,9 +28,9 @@ char* cli_get_str() {
 	}
 }
 
-void load_source(char* src) {
+void load_source(char* src, int isHeap) {
 	//todo: scan buf into a scannerState
-	scannerState* state = scanner_scan_source(src, strlen(src));
+	scannerState* state = scanner_scan_source(src, strlen(src), isHeap);
 #ifdef CLI_DEBUG
 	scanner_dump_print_tokens(state);
 #endif
@@ -98,19 +98,18 @@ void repl() {
 			}
 		}
 		buf[inc] = '\0';
-		load_source(buf);
+		load_source(buf, 1);
 		free(strings);
-		free(buf);
 	}
 }
 
 void tests() {
-	
+	load_source("your mom", 0);
 }
 
 int main() {
 	while (1) {
-		printf("Type \"test\" to perform all tests.\nType \"repl\" to enter the repl.\n");
+		printf("Type \"test\" to perform all tests.\nType \"repl\" to enter the repl.\nType \"file\" followed by a file path to load said file\n");
 		char* str = cli_get_str();
 		if (!strcmp(str, "test")) {
 			tests();
@@ -119,6 +118,9 @@ int main() {
 		else if (!strcmp(str, "repl")) {
 			repl();
 			break;
+		}
+		else if (!strcmp(str, "file")) {
+			printf("Unimplemented.\n");
 		}
 	}
 	repl();
