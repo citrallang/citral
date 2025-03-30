@@ -53,6 +53,7 @@ void load_source(char* src) {
 	//todo: assemble
 	//todo: link to standard library (i need to make a standard library)
 	//todo: run code
+	scanner_free_state(state);
 }
 
 void repl() {
@@ -98,6 +99,8 @@ void repl() {
 		}
 		buf[inc] = '\0';
 		load_source(buf);
+		free(strings);
+		free(buf);
 	}
 }
 

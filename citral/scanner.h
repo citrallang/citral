@@ -53,3 +53,4 @@ void scanner_short_comment(scannerState* state);
 void scanner_long_comment(scannerState* state);
 int scanner_is_alpha(char isThis);
 int scanner_is_numeric(char isThis);
+void scanner_free_state(scannerState* state);

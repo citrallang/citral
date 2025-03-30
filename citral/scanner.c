@@ -61,6 +61,12 @@ scannerState* scanner_spawn_state() {
 	return state;
 }
 
+void scanner_free_state(scannerState* state) {
+	free(state->tokBuf);
+	free(state->buf);
+	free(state);
+}
+
 scannerState* scanner_create_state(char* buf, size_t bufSize) {
 	scannerState* state = xmalloc(sizeof(scannerState));
 	state->buf = buf;
@@ -267,10 +273,10 @@ void scanner_print_token(scannerToken tok) {
 	printf("Line %d\t%.*s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc);
 }
 
-int scanner_isAlpha(char isThis) {
+int scanner_is_alpha(char isThis) {
 	return isThis >= 'A' && isThis <= 'z';
 }
-int scanner_isNumeric(char isThis) {
+int scanner_is_numeric(char isThis) {
 	return isThis >= '0' && isThis <= '9';
 }
 
@@ -302,7 +308,7 @@ scannerToken scanner_identifier(scannerState* state, char current) {
 	int len = 2;
 
 	while (current = scanner_advance(state)) {
-		if (!scanner_isAlpha(current) && !scanner_isNumeric(current) && current != '_') {
+		if (!scanner_is_alpha(current) && !scanner_is_numeric(current) && current != '_') {
 			break;
 		}
 		len++;
