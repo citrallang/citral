@@ -5,7 +5,7 @@
 
 
 typedef enum TokenType {
-	TOKEN_PLUS, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET,
+	TOKEN_PLUS, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
 	TOKEN_PLUSEQ, TOKEN_MINUSEQ, TOKEN_STAREQ, TOKEN_SLASHEQ, TOKEN_PERCENTEQ, TOKEN_CARETEQ, TOKEN_PLUSPLUS, TOKEN_MINUSMINUS,
 
 	TOKEN_EQ, TOKEN_EQEQ, TOKEN_BANG, TOKEN_BANGEQ, TOKEN_AMPAMP, TOKEN_BARBAR,
@@ -44,7 +44,7 @@ uint8_t scanner_is_at_end(scannerState* state);
 void scanner_insert_token(scannerState* state, scannerToken token);
 void scanner_print_token(scannerToken tok);
 void scanner_dump_print_tokens(scannerState* state);
-scannerToken scanner_string(scannerState* state, char first);
+scannerToken scanner_short_string(scannerState* state, char first);
 scannerToken scanner_number(scannerState* state, char first);
 scannerToken scanner_identifier(scannerState* state, char first);
 void scanner_short_comment(scannerState* state);

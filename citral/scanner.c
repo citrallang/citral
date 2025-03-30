@@ -151,6 +151,9 @@ scanner_start_of_next_token:
 		}
 		return scanner_create_token(state, TOKEN_CARET, 1);
 	}
+	case '~': {
+		return scanner_create_token(state, TOKEN_TILDE, 1);
+	}
 	case '&': {
 		if (scanner_expect(state, '&') == '&') {
 			return scanner_create_token(state, TOKEN_AMPAMP, 2);
@@ -174,10 +177,16 @@ scanner_start_of_next_token:
 	}
 
 	case '"': {
-		return scanner_string(state, next);
+		return scanner_short_string(state, next);
 	}
 
 	default: {
+		if (scanner_isAlpha(next)) {
+			return scanner_identifier(state, next);
+		}
+		if (scanner_isNumeric(next)) {
+			return scanner_number(state, next);
+		}
 		char* buf = xmalloc(128);
 		snprintf(buf, 128, "Unrecognized character at line %d. Character: %c %d\n", state->curLine, next, next);
 		scanner_error(state, buf, state->cur - 1, 1, state->curLine);
@@ -247,14 +256,34 @@ int scanner_isNumeric(char isThis) {
 	return isThis >= '0' && isThis <= '9';
 }
 
-scannerToken scanner_string(scannerState* state, char first) {
-	
+scannerToken scanner_short_string(scannerState* state, char first) {
+	int len = 2;
+	while ((first = scanner_advance(state)) != '"') {
+		if (first == '\n' || scanner_is_at_end(state)) {
+			char* buf = xmalloc(256 + len);
+			snprintf(buf, 256+len, "Unterminated short string at line %d. String: %.*s", state->curLine, len, state->cur - len);
+			scanner_error(state, buf, state->cur - len, len, state->curLine);
+			return scanner_create_token(state, TOKEN_ERROR, len);
+		}
+		len++;
+	}
+	return scanner_create_token(state, TOKEN_STRING, len);
 }
+
 scannerToken scanner_number(scannerState* state, char first) {
 
 }
-scannerToken scanner_identifier(scannerState* state, char first) {
 
+scannerToken scanner_identifier(scannerState* state, char current) {
+	int len = 2;
+
+	while (current = scanner_advance(state)) {
+		if (!scanner_isAlpha(current) && current != '_') {
+			break;
+		}
+		len++;
+	}
+	return scanner_create_token(state, TOKEN_IDENTIFIER, len);
 }
 
 void scanner_short_comment(scannerState* state) {
