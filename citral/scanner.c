@@ -289,7 +289,8 @@ scannerToken scanner_short_string(scannerState* state, char first) {
 }
 
 scannerToken scanner_number(scannerState* state, char first) {
-
+	perror("scanner_number is unimplemented");
+	exit(4);
 }
 
 scannerToken scanner_identifier(scannerState* state, char current) {
