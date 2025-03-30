@@ -199,10 +199,10 @@ scanner_start_of_next_token:
 	}
 
 	default: {
-		if (scanner_isAlpha(next)) {
+		if (scanner_is_alpha(next)) {
 			return scanner_identifier(state, next);
 		}
-		if (scanner_isNumeric(next)) {
+		if (scanner_is_numeric(next)) {
 			return scanner_number(state, next);
 		}
 		char* buf = xmalloc(128);
@@ -288,9 +288,14 @@ scannerToken scanner_short_string(scannerState* state, char first) {
 	return scanner_create_token(state, TOKEN_STRING, len);
 }
 
-scannerToken scanner_number(scannerState* state, char first) {
-	perror("scanner_number is unimplemented");
-	exit(4);
+scannerToken scanner_number(scannerState* state, char current) {
+	uint8_t wasFloat = 0;
+	int len = 1;
+	while (current = scanner_advance(state)) {
+		
+	}
+	//perror("scanner_number is unimplemented");
+	//exit(4);
 }
 
 scannerToken scanner_identifier(scannerState* state, char current) {

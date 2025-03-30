@@ -12,7 +12,7 @@ typedef enum TokenType {
 	
 	TOKEN_OPENPAREN, TOKEN_CLOSEPAREN, TOKEN_OPENBRACK, TOKEN_CLOSEBRACK, TOKEN_OPENBRACE, TOKEN_CLOSEBRACE,
 
-	TOKEN_STRING, TOKEN_NUMBER, TOKEN_IDENTIFIER,
+	TOKEN_STRING, TOKEN_FLOAT, TOKEN_INT, TOKEN_IDENTIFIER,
 
 	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
 } TokenType;
@@ -51,5 +51,5 @@ scannerToken scanner_number(scannerState* state, char first);
 scannerToken scanner_identifier(scannerState* state, char first);
 void scanner_short_comment(scannerState* state);
 void scanner_long_comment(scannerState* state);
-int scanner_isAlpha(char isThis);
-int scanner_isNumeric(char isThis);
+int scanner_is_alpha(char isThis);
+int scanner_is_numeric(char isThis);
