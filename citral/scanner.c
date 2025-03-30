@@ -166,6 +166,24 @@ scanner_start_of_next_token:
 		}
 		return scanner_create_token(state, TOKEN_BANG, 1);
 	}
+	case '(': {
+		return scanner_create_token(state, TOKEN_OPENPAREN, 1);
+	}
+	case ')': {
+		return scanner_create_token(state, TOKEN_CLOSEPAREN, 1);
+	}
+	case '[': {
+		return scanner_create_token(state, TOKEN_OPENBRACK, 1);
+	}
+	case ']': {
+		return scanner_create_token(state, TOKEN_CLOSEBRACK, 1);
+	}
+	case '{': {
+		return scanner_create_token(state, TOKEN_OPENBRACE, 1);
+	}
+	case '}': {
+		return scanner_create_token(state, TOKEN_CLOSEBRACE, 1);
+	}
 	case '\t':
 	case ' ':
 	{
