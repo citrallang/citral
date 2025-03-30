@@ -182,7 +182,7 @@ scanner_start_of_next_token:
 		return scanner_create_token(state, TOKEN_OPENBRACE, 1);
 	}
 	case '}': {
-		return scanner_create_token(state, TOKEN_CLOSEBRACE, 1);
+		return scanner_create_token(state, TOKEN_CLOSEBRACE, 1); 
 	}
 	case '\t':
 	case ' ':
@@ -296,7 +296,7 @@ scannerToken scanner_identifier(scannerState* state, char current) {
 	int len = 2;
 
 	while (current = scanner_advance(state)) {
-		if (!scanner_isAlpha(current) && current != '_') {
+		if (!scanner_isAlpha(current) && !scanner_isNumeric(current) && current != '_') {
 			break;
 		}
 		len++;
