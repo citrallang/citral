@@ -12,7 +12,7 @@ typedef enum TokenType {
 	
 	TOKEN_OPENPAREN, TOKEN_CLOSEPAREN, TOKEN_OPENBRACK, TOKEN_CLOSEBRACK, TOKEN_OPENBRACE, TOKEN_CLOSEBRACE,
 
-	TOKEN_STRING, TOKEN_INT, TOKEN_FLOAT, TOKEN_IDENTIFIER,
+	TOKEN_STRING, TOKEN_INT, TOKEN_FLOAT, TOKEN_IDENTIFIER, TOKEN_CHAR,
 
 	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
 } TokenType;
@@ -40,7 +40,8 @@ scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap);
 scannerToken scanner_next_token(scannerState* state);
 scannerToken scanner_create_token(scannerState* state, TokenType type, size_t size);
 char scanner_advance(scannerState* state);
-char scanner_match(scannerState* state, char matchAgainst);
+#define scanner_backtrack(state) state->cur-- 
+uint8_t scanner_match(scannerState* state, char matchAgainst);
 char scanner_expect(scannerState* state, char expectThis); //todo
 char scanner_peek(scannerState* state);
 uint8_t scanner_is_at_end(scannerState* state);

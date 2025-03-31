@@ -12,13 +12,11 @@ char scanner_peek(scannerState* state) {
 	return *state->cur;
 }
 
-char scanner_match(scannerState* state, char matchAgainst) {
+uint8_t scanner_match(scannerState* state, char matchAgainst) {
 	char t = *state->cur;
-	if (t == matchAgainst) {
-		state->cur++;
-		return t;
-	}
-	return 0;
+	uint8_t eq = t == matchAgainst;
+	state->cur += eq;
+	return eq;
 }
 
 char scanner_expect(scannerState* state, char expectThis) {
@@ -205,7 +203,12 @@ scanner_start_of_next_token:
 	case '"': {
 		return scanner_short_string(state, next);
 	}
-
+	case '\'': {
+		if (scanner_advance(state) == '\\')
+			scanner_advance(state);
+		scanner_expect(state, '\'');
+		return scanner_create_token(state, TOKEN_CHAR, 3);
+	}
 	default: {
 		if (scanner_is_alpha(next)) {
 			return scanner_identifier(state, next);
@@ -298,12 +301,13 @@ scannerToken scanner_short_string(scannerState* state, char first) {
 
 scannerToken scanner_number(scannerState* state, char current) {
 	uint8_t wasFloat = 0;
-	int len = 2;
+	int len = 1;
 	if (current == '.') {
 		wasFloat = 1;
 	}
 	while (current = scanner_advance(state)) {
 		if (!scanner_is_numeric(current) && current != '.') {
+			scanner_backtrack(state);
 			return scanner_create_token(state, TOKEN_INT + wasFloat, len);
 		}
 		wasFloat = wasFloat || current == '.';
@@ -313,7 +317,7 @@ scannerToken scanner_number(scannerState* state, char current) {
 }
 
 scannerToken scanner_identifier(scannerState* state, char current) {
-	int len = 2;
+	int len = 1;
 
 	while (current = scanner_advance(state)) {
 		if (!scanner_is_alpha(current) && !scanner_is_numeric(current) && current != '_') {
@@ -321,6 +325,7 @@ scannerToken scanner_identifier(scannerState* state, char current) {
 		}
 		len++;
 	}
+	scanner_backtrack(state);
 	return scanner_create_token(state, TOKEN_IDENTIFIER, len);
 }
 
