@@ -2,7 +2,7 @@
 #include "scanner.h"
 #include <stdint.h>
 typedef enum astType {
-	AST_WHILE,
+	AST_WHILE, AST_FOR, AST_IF, AST_SWITCH,
 } astType;
 
 typedef union astLiteralUnion {
@@ -26,9 +26,11 @@ typedef struct astNode {
 	struct astNode* left;
 	struct astNode* right;
 	astLiteralUnion literal;
-};
+} astNode;
 
 typedef struct parserState {
 	scannerState* encompassingScanner;
-
+	astNode** program;
+	size_t programSize;
+	size_t programCapacity;
 } parserState;
