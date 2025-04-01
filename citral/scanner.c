@@ -81,6 +81,10 @@ scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap) {
 
 
 void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
+	scanner_insert_token(state, scanner_error_token(state, msg, posInSrc, numChars, lineInSrc));
+}
+
+scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
 	printf(msg);
 	printf("\n");
 	state->hadError = 1;
@@ -90,9 +94,8 @@ void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numCha
 		.posInSrc = posInSrc,
 		.type = TOKEN_ERROR
 	};
-	scanner_insert_token(state, tok);
+	return tok;
 }
-
 scannerToken scanner_next_token(scannerState* state) {
 scanner_start_of_next_token:
 	char next = scanner_advance(state);
@@ -307,7 +310,11 @@ scannerToken scanner_number(scannerState* state, char current) {
 	}
 	while (current = scanner_advance(state)) {
 		if (!scanner_is_numeric(current) && current != '.') {
-			scanner_backtrack(state);
+			if (*(scanner_backtrack(state)) == '.') {
+				char* buf = xmalloc(128);
+				snprintf(buf, 128, "Number ended with '.' at line %d.", state->curLine);
+				return scanner_error_token(state, buf, state->cur, 1, state->curLine);
+			}
 			return scanner_create_token(state, TOKEN_INT + wasFloat, len);
 		}
 		wasFloat = wasFloat || current == '.';

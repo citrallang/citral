@@ -34,6 +34,7 @@ typedef struct scannerState {
 	int hadError : 1;
 	int isSrcHeap : 1;
 } scannerState;
+scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
 void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
 scannerState* scanner_scan_source(char* src, size_t bufSize, int isHeap);
 scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap);
