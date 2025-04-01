@@ -1,0 +1,5 @@
+/*
+first parser will be terrible intentionally
+once ive finished reading a few more compiler textbooks i will come back and rewrite this
+TODO
+*/

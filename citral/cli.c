@@ -3,7 +3,6 @@
 #include "scanner.h"
 #include "config.h"
 #include "parser.h"
-//tests for this file are done by hand.
 
 char* cli_get_str() {
 	char* buf = xmalloc(16);

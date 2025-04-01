@@ -34,3 +34,6 @@ typedef struct parserState {
 	size_t programSize;
 	size_t programCapacity;
 } parserState;
+
+parserState* parser_scanner_state(scannerState* state);
+parserState* parser_create_state(scannerState* encompassing);
