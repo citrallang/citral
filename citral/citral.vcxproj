@@ -35,6 +35,7 @@
     <ClInclude Include="compiler.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="generator.h" />
+    <ClInclude Include="grammar.h" />
     <ClInclude Include="il-almostasm.h" />
     <ClInclude Include="il-linear.h" />
     <ClInclude Include="interpreter.h" />
