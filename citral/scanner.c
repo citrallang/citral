@@ -85,8 +85,8 @@ void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numCha
 }
 
 scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
-	printf(msg);
-	printf("\n");
+	fprintf(stderr, msg);
+	fprintf(stderr, "\n");
 	state->hadError = 1;
 	scannerToken tok = {
 		.line = lineInSrc,
