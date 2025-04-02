@@ -8,6 +8,7 @@ typedef enum astType {
 typedef union astLiteralUnion {
 	float asFloat;
 	double asDouble;
+	char asChar;
 	uint8_t asUI8;
 	uint16_t asUI16;
 	uint32_t asUI32;
@@ -17,6 +18,7 @@ typedef union astLiteralUnion {
 	int32_t asI32;
 	int64_t asI64;
 	char* asStr;
+	void* asPtr;
 } astLiteralUnion;
 
 
@@ -37,3 +39,5 @@ typedef struct parserState {
 
 parserState* parser_scanner_state(scannerState* state);
 parserState* parser_create_state(scannerState* encompassing);
+parserState* parser_evaluate_scanner(scannerState* scState);
+void parser_evaluate(parserState* state);

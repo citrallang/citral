@@ -16,9 +16,9 @@ ifStmt = if expr: statement
 switchStmt = switch expr {(case expr:)* statement}
 returnStmt = return expr
 localDecl = local identifier (= expr)?
-globalDecl = 
-mutation
-
+globalDecl = global identifier (= expr)?
+mutation = identifier = expr
+expr = grouping | exprStmt | arithmetic
 
 
 
