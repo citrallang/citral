@@ -1,5 +1,6 @@
 #pragma once
 #include "scanner.h"
+#include "allocator.h"
 #include <stdint.h>
 typedef enum astType {
 	AST_WHILE, AST_FOR, AST_IF, AST_SWITCH,
@@ -40,3 +41,5 @@ typedef struct parserState {
 parserState* parser_create_state(scannerState* encompassing);
 parserState* parser_evaluate_scanner(scannerState* scState);
 void parser_evaluate(parserState* state);
+void parser_evaluate_ast_node(parserState* state, astNode* node);
+void parser_error(parserState* state, char* msg);
