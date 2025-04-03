@@ -5,7 +5,7 @@ TODO
 */
 #include "parser.h"
 #include "scanner.h"
-
+#include <stdio.h>
 parserState* parser_create_state(scannerState* encompassing) {
 	parserState* state = xmalloc(sizeof(parserState));
 	state->encompassingScanner = encompassing;
@@ -21,7 +21,9 @@ parserState* parser_evaluate_scanner(scannerState* scState) {
 	return state;
 }
 
-void parser_error(parserState* state, char* msg) {}
+void parser_error(parserState* state, char* msg) {
+	
+}
 
 void parser_evaluate(parserState* state) {
 	scannerState* scanner = state->encompassingScanner;

@@ -3,7 +3,19 @@
 #include "allocator.h"
 #include <stdint.h>
 typedef enum astType {
-	AST_WHILE, AST_FOR, AST_IF, AST_SWITCH,
+	//control flow
+	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_SWITCH, AST_LOOP,
+
+	//constants
+	AST_FLOAT, AST_DOUBLE, AST_UI8, AST_CHAR, AST_I8, AST_UI16, AST_I16, AST_UI32, AST_I32, AST_UI64, AST_I64, AST_PTR, AST_STR,
+
+	//resultant arithmetic
+	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIV, AST_MOD, AST_POW,
+
+
+	AST_MODIFY, AST_LOCALDECL, AST_GLOBALDECL, 
+
+	AST_ERROR,
 } astType;
 
 typedef union astLiteralUnion {
