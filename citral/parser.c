@@ -33,3 +33,7 @@ void parser_evaluate(parserState* state) {
 #endif
 	}
 }
+
+void parser_scan_token(scannerState* state) {
+
+}
