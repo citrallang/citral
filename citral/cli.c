@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "scanner.h"
 #include "config.h"
-#include "parser.h"
+#include "parser_old.h"
 
 char* cli_get_str() {
 	char* buf = xmalloc(16);

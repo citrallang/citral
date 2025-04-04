@@ -3,7 +3,7 @@ first parser will be terrible intentionally
 once ive finished reading a few more compiler textbooks i will come back and rewrite this
 TODO
 */
-#include "parser.h"
+#include "parser_old.h"
 #include "scanner.h"
 #include <stdio.h>
 parserState* parser_create_state(scannerState* encompassing) {
@@ -39,6 +39,7 @@ void parser_evaluate(parserState* state) {
 scannerToken parser_advance(parserState* state) {
 	return state->encompassingScanner->tokBuf[state->scannerPos++];
 }
+
 //typedef enum TokenType {
 //	TOKEN_PLUS, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
 //	TOKEN_PLUSEQ, TOKEN_MINUSEQ, TOKEN_STAREQ, TOKEN_SLASHEQ, TOKEN_PERCENTEQ, TOKEN_CARETEQ, TOKEN_PLUSPLUS, TOKEN_MINUSMINUS,
@@ -62,10 +63,15 @@ astNode parser_scan_token(parserState* state) {
 	}
 	case TOKEN_PLUS: {
 		astNode node = parser_create_node(AST_PLUS);
+		astNode left = parser_scan_token(state);
 		
 	}
 	}
 	return parser_create_node(AST_NOP);
+}
+
+uint8_t parser_ensure_expr(astNode node) {
+
 }
 
 astNode parser_create_node(astType type) {
