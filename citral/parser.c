@@ -34,6 +34,6 @@ void parser_evaluate(parserState* state) {
 	}
 }
 
-int parser_scan_token(scannerState* state) {
+int parser_scan_token(parserState* state) {
 	return 0;
 }
