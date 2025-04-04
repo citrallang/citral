@@ -26,7 +26,10 @@ void parser_error(parserState* state, char* msg) {
 
 void parser_evaluate(parserState* state) {
 	scannerState* scanner = state->encompassingScanner;
-	while (parser_scan_token(state)) {
+	while (1) {
+		if (parser_scan_token(state).type == AST_EOF) {
+			return;
+		}
 #ifdef PARSER_DEBUG
 		//print debug info
 #endif
@@ -36,15 +39,33 @@ void parser_evaluate(parserState* state) {
 scannerToken parser_advance(parserState* state) {
 	return state->encompassingScanner->tokBuf[state->scannerPos++];
 }
-
-int parser_scan_token(parserState* state) {
+//typedef enum TokenType {
+//	TOKEN_PLUS, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
+//	TOKEN_PLUSEQ, TOKEN_MINUSEQ, TOKEN_STAREQ, TOKEN_SLASHEQ, TOKEN_PERCENTEQ, TOKEN_CARETEQ, TOKEN_PLUSPLUS, TOKEN_MINUSMINUS,
+//
+//	TOKEN_EQ, TOKEN_EQEQ, TOKEN_BANG, TOKEN_BANGEQ, TOKEN_AMPAMP, TOKEN_BARBAR,
+//
+//	TOKEN_OPENPAREN, TOKEN_CLOSEPAREN, TOKEN_OPENBRACK, TOKEN_CLOSEBRACK, TOKEN_OPENBRACE, TOKEN_CLOSEBRACE,
+//
+//	TOKEN_STRING, TOKEN_INT, TOKEN_FLOAT, TOKEN_IDENTIFIER, TOKEN_CHAR,
+//
+//	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
+//} TokenType;
+astNode parser_scan_token(parserState* state) {
 	scannerToken tok;
 	switch ((tok = parser_advance(state)).type) {
 	case TOKEN_EOF: {
-		return 0;
+		return parser_create_node(AST_EOF);
+	}
+	case TOKEN_START: {
+		return parser_create_node(AST_NOP);
+	}
+	case TOKEN_PLUS: {
+		astNode node = parser_create_node(AST_PLUS);
+		
 	}
 	}
-	return 0;
+	return parser_create_node(AST_NOP);
 }
 
 astNode parser_create_node(astType type) {
