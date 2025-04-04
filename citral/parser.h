@@ -45,14 +45,19 @@ typedef struct astNode {
 
 typedef struct parserState {
 	scannerState* encompassingScanner;
+	size_t scannerPos;
+
 	astNode** program;
 	size_t programSize;
 	size_t programCapacity;
 } parserState;
 
+astNode parser_create_node(astType type);
+astNode parser_create_node_literal(astType type, astLiteralUnion literal);
 parserState* parser_create_state(scannerState* encompassing);
 parserState* parser_evaluate_scanner(scannerState* scState);
 void parser_evaluate(parserState* state);
 void parser_evaluate_ast_node(parserState* state, astNode* node);
 void parser_error(parserState* state, char* msg);
 int parser_scan_token(parserState* state);
+scannerToken parser_advance(parserState* state);

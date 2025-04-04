@@ -11,7 +11,6 @@ parserState* parser_create_state(scannerState* encompassing) {
 	state->encompassingScanner = encompassing;
 	state->program = xmalloc(sizeof(astNode*) * 16);
 	state->programCapacity = 16;
-	state->programSize = 0;
 	return state;
 }
 
@@ -34,6 +33,28 @@ void parser_evaluate(parserState* state) {
 	}
 }
 
+scannerToken parser_advance(parserState* state) {
+	return state->encompassingScanner->tokBuf[state->scannerPos++];
+}
+
 int parser_scan_token(parserState* state) {
+	scannerToken tok;
+	switch ((tok = parser_advance(state)).type) {
+	case TOKEN_EOF: {
+		return 0;
+	}
+	}
 	return 0;
+}
+
+astNode parser_create_node(astType type) {
+	astNode node = {
+		.type = type
+	};
+	return node;
+}
+astNode parser_create_node_literal(astType type, astLiteralUnion literal) {
+	astNode node = parser_create_node(type);
+	node.literal = literal;
+	return node;
 }
