@@ -5,6 +5,7 @@
 
 #ifdef ALL_DEBUG
 #define CLI_DEBUG
+#define PARSER_DEBUG
 #endif
 
 

@@ -55,3 +55,4 @@ parserState* parser_evaluate_scanner(scannerState* scState);
 void parser_evaluate(parserState* state);
 void parser_evaluate_ast_node(parserState* state, astNode* node);
 void parser_error(parserState* state, char* msg);
+void parser_scan_token(state);

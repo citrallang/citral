@@ -27,13 +27,9 @@ void parser_error(parserState* state, char* msg) {
 
 void parser_evaluate(parserState* state) {
 	scannerState* scanner = state->encompassingScanner;
-	for (int i = 0; i < scanner->numToks; i++) {
-		scannerToken token = scanner->tokBuf[i];
-		switch (token.type) {
-
-		default: {
-
-		}
-		}
+	while (parser_scan_token(state)) {
+#ifdef PARSER_DEBUG
+		//print debug info
+#endif
 	}
 }
