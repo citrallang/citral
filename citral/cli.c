@@ -30,11 +30,15 @@ char* cli_get_str() {
 
 void load_source(char* src, int isHeap) {
 	//todo: scan buf into a scannerState
-	scannerState* state = scanner_scan_full_source(src, strlen(src), isHeap);
+	scannerState* scanState = scanner_create_state(src, strlen(src), isHeap);
 #ifdef CLI_DEBUG
-	scanner_dump_print_tokens(state);
+	scanner_dump_print_tokens(scanState);
 #endif
-	
+	parserState* parseState = parser_create_state(scanState);
+	parser_parse_state(parseState);
+#ifdef PARSER_DEBUG
+	parser_print_ast(parseState);
+#endif
 	//todo: parse the scannerState into a valid AST
 	//todo: ast optimization pass 1: prune unreachable code
 	//todo: convert the AST into a DAG
