@@ -21,7 +21,7 @@
     <ClCompile Include="scanner.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="parser_old.c">
+    <ClCompile Include="parser.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="generator.c">
@@ -59,7 +59,7 @@
     <ClInclude Include="il-ast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="parser_old.h">
+    <ClInclude Include="parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scanner.h">

@@ -27,7 +27,7 @@
     <ClCompile Include="il-dag.h" />
     <ClCompile Include="interpreter.c" />
     <ClCompile Include="astoptimizer.c" />
-    <ClCompile Include="parser_old.c" />
+    <ClCompile Include="parser.c" />
     <ClCompile Include="scanner.c" />
   </ItemGroup>
   <ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="interpreter.h" />
     <ClInclude Include="il-ast.h" />
     <ClInclude Include="linearoptimizer.c" />
-    <ClInclude Include="parser_old.h" />
+    <ClInclude Include="parser.h" />
     <ClInclude Include="rules.h" />
     <ClInclude Include="scanner.h" />
   </ItemGroup>

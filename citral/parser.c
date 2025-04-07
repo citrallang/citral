@@ -3,7 +3,7 @@ first parser will be terrible intentionally
 once ive finished reading a few more compiler textbooks i will come back and rewrite this
 TODO
 */
-#include "parser_old.h"
+#include "parser.h"
 #include "scanner.h"
 #include <stdio.h>
 parserState* parser_create_state(scannerState* encompassing) {
