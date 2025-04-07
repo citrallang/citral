@@ -36,7 +36,7 @@ typedef struct scannerState {
 } scannerState;
 scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
 void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
-scannerState* scanner_scan_source(char* src, size_t bufSize, int isHeap);
+scannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap);
 scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap);
 scannerToken scanner_next_token(scannerState* state);
 scannerToken scanner_create_token(scannerState* state, TokenType type, size_t size);

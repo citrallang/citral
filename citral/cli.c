@@ -30,7 +30,7 @@ char* cli_get_str() {
 
 void load_source(char* src, int isHeap) {
 	//todo: scan buf into a scannerState
-	scannerState* state = scanner_scan_source(src, strlen(src), isHeap);
+	scannerState* state = scanner_scan_full_source(src, strlen(src), isHeap);
 #ifdef CLI_DEBUG
 	scanner_dump_print_tokens(state);
 #endif

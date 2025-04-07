@@ -2,18 +2,27 @@
 #include "scanner.h"
 #include "allocator.h"
 #include <stdint.h>
-typedef enum astType {
-	//control flow
-	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_SWITCH, AST_LOOP,
 
-	//constants
-	AST_FLOAT, AST_DOUBLE, AST_UI8, AST_CHAR, AST_I8, AST_UI16, AST_I16, AST_UI32, AST_I32, AST_UI64, AST_I64, AST_PTR, AST_STR,
+typedef enum astConstant {
+	CONST_FLOAT, CONST_DOUBLE, CONST_UI8,  CONST_I8, CONST_UI16, CONST_I16, CONST_UI32, CONST_I32, CONST_UI64, CONST_I64, CONST_PTR, CONST_CHAR, CONST_STR,
+};
+
+typedef enum astType {
+	//statements
+	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_SWITCH, AST_LOOP, AST_RETURN,
+
+	//expression statements
+	AST_MODIFY, AST_LOCALDECL, AST_GLOBALDECL,
+	AST_INC, AST_DEC,
+
+	AST_CONSTANT,
 
 	//resultant arithmetic
 	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIV, AST_MOD, AST_POW,
 
 
-	AST_MODIFY, AST_LOCALDECL, AST_GLOBALDECL, 
+
+	AST_BLOCK,
 
 	AST_ERROR, AST_NULL, AST_NOP, AST_EOF,
 } astType;
@@ -38,7 +47,7 @@ typedef union astLiteralUnion {
 
 typedef struct astNode {
 	astType type;
-	struct astNode* left;
+	struct astNode* left; //if type == AST_BLOCK then this is an array of statements
 	struct astNode* right;
 	astLiteralUnion literal;
 } astNode;

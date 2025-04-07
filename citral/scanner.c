@@ -239,7 +239,9 @@ void scanner_insert_token(scannerState* state, scannerToken token) {
 	state->tokBuf[state->numToks++] = token;
 }
 
-scannerState* scanner_scan_source(char* src, size_t bufSize, int isHeap) {
+
+
+scannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap) {
 	scannerState* state = scanner_create_state(src, bufSize, isHeap);
 	scannerToken last = {
 		.type = TOKEN_START,
