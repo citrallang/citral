@@ -7,17 +7,11 @@ TODO
 #include "scanner.h"
 #include <stdio.h>
 parserState* parser_create_state(scannerState* encompassing) {
-	parserState* state = xmalloc(sizeof(parserState));
-	state->encompassingScanner = encompassing;
-	state->program = xmalloc(sizeof(astNode*) * 16);
-	state->programCapacity = 16;
-	return state;
+
 }
 
 parserState* parser_evaluate_scanner(scannerState* scState) {
-	parserState* state = parser_create_state(scState);
-	parser_evaluate(state);
-	return state;
+
 }
 
 void parser_error(parserState* state, char* msg) {
@@ -25,19 +19,11 @@ void parser_error(parserState* state, char* msg) {
 }
 
 void parser_evaluate(parserState* state) {
-	scannerState* scanner = state->encompassingScanner;
-	while (1) {
-		if (parser_scan_token(state).type == AST_EOF) {
-			return;
-		}
-#ifdef PARSER_DEBUG
-		//print debug info
-#endif
-	}
+	
 }
 
 scannerToken parser_advance(parserState* state) {
-	return state->encompassingScanner->tokBuf[state->scannerPos++];
+
 }
 
 //typedef enum TokenType {
@@ -53,35 +39,13 @@ scannerToken parser_advance(parserState* state) {
 //	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
 //} TokenType;
 astNode parser_scan_token(parserState* state) {
-	scannerToken tok;
-	switch ((tok = parser_advance(state)).type) {
-	case TOKEN_EOF: {
-		return parser_create_node(AST_EOF);
-	}
-	case TOKEN_START: {
-		return parser_create_node(AST_NOP);
-	}
-	case TOKEN_PLUS: {
-		astNode node = parser_create_node(AST_PLUS);
-		astNode left = parser_scan_token(state);
-		
-	}
-	}
-	return parser_create_node(AST_NOP);
-}
-
-uint8_t parser_ensure_expr(astNode node) {
 
 }
+
 
 astNode parser_create_node(astType type) {
-	astNode node = {
-		.type = type
-	};
-	return node;
+
 }
 astNode parser_create_node_literal(astType type, astLiteralUnion literal) {
-	astNode node = parser_create_node(type);
-	node.literal = literal;
-	return node;
+
 }

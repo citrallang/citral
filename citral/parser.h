@@ -56,7 +56,7 @@ typedef struct parserState {
 	scannerState* encompassingScanner;
 	size_t scannerPos;
 
-	astNode** program;
+	astNode* program;
 	size_t programSize;
 	size_t programCapacity;
 } parserState;
