@@ -57,3 +57,4 @@ void scanner_long_comment(scannerState* state);
 int scanner_is_alpha(char isThis);
 int scanner_is_numeric(char isThis);
 void scanner_free_state(scannerState* state);
+char* get_line_from_ptr(char* pos, char* end);

@@ -1,8 +1,4 @@
-/*
-first parser will be terrible intentionally
-once ive finished reading a few more compiler textbooks i will come back and rewrite this
-TODO
-*/
+//hand rolled parser
 #include "parser.h"
 #include "scanner.h"
 #include <stdio.h>
@@ -15,31 +11,64 @@ parserState* parser_evaluate_scanner(scannerState* scState) {
 }
 
 void parser_error(parserState* state, char* msg) {
-	
+	state->hadError = 1;
+	char* cur1 = state->encompassingScanner->cur;
+	char* cur2 = cur1;
+	int len = 0;
+	for (;;) {
+		uint8_t flag = 0;
+		if (cur1 < state->encompassingScanner->buf || *cur1 == '\n') {
+			flag++;
+		}
+		else {
+			cur1++;
+			len++;
+		}
+		if (cur2 >= state->encompassingScanner->buf + state->encompassingScanner->bufCapacity || *cur2 == '\n') {
+			flag++;
+		}
+		else {
+			cur2--;
+			len++;
+		}
+		if (flag == 2) {
+			break;
+		}
+	}
+	printf("Parse error at line %d: \"%.*s\". Error message: %s", state->encompassingScanner->curLine,
+		get_line_from_ptr(state->encompassingScanner->cur, state->encompassingScanner->buf + state->encompassingScanner->bufCapacity), msg);
+
 }
 
 void parser_evaluate(parserState* state) {
-	
+	scannerToken tok;
+	for (;;) {
+		tok = parser_advance(state);
+		switch (tok.type) {
+		case TOKEN_EOF:
+			goto exit_parser_evaluate;
+		case TOKEN_IDENTIFIER: {
+			int chars = tok.numChars;
+			char* pos = tok.posInSrc;
+			astType typeOfIdentifier = parser_what_is_identifier(pos, chars);
+			//if, for, break, return, variable, etc
+			switch (typeOfIdentifier)
+			{
+			case AST_IDENTIFIER: {
+				parser_error(state, "Expected statement, found identifier.");
+				state->hadError = 1;
+			}
+			}
+		}
+		}
+	}
+	exit_parser_evaluate:;
 }
+
+astType parser_what_is_identifier(char* identifier, int len){}
 
 scannerToken parser_advance(parserState* state) {
-
-}
-
-//typedef enum TokenType {
-//	TOKEN_PLUS, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
-//	TOKEN_PLUSEQ, TOKEN_MINUSEQ, TOKEN_STAREQ, TOKEN_SLASHEQ, TOKEN_PERCENTEQ, TOKEN_CARETEQ, TOKEN_PLUSPLUS, TOKEN_MINUSMINUS,
-//
-//	TOKEN_EQ, TOKEN_EQEQ, TOKEN_BANG, TOKEN_BANGEQ, TOKEN_AMPAMP, TOKEN_BARBAR,
-//
-//	TOKEN_OPENPAREN, TOKEN_CLOSEPAREN, TOKEN_OPENBRACK, TOKEN_CLOSEBRACK, TOKEN_OPENBRACE, TOKEN_CLOSEBRACE,
-//
-//	TOKEN_STRING, TOKEN_INT, TOKEN_FLOAT, TOKEN_IDENTIFIER, TOKEN_CHAR,
-//
-//	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
-//} TokenType;
-astNode parser_scan_token(parserState* state) {
-
+	return scanner_next_token(state->encompassingScanner);
 }
 
 

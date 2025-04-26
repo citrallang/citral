@@ -35,9 +35,9 @@ void load_source(char* src, int isHeap) {
 	scanner_dump_print_tokens(scanState);
 #endif
 	parserState* parseState = parser_create_state(scanState);
-	parser_parse_state(parseState);
+	//parser_parse_state(parseState);
 #ifdef PARSER_DEBUG
-	parser_print_ast(parseState);
+	//parser_print_ast(parseState);
 #endif
 	//todo: parse the scannerState into a valid AST
 	//todo: ast optimization pass 1: prune unreachable code
@@ -57,7 +57,7 @@ void load_source(char* src, int isHeap) {
 	//todo: assemble
 	//todo: link to standard library (i need to make a standard library)
 	//todo: run code
-	scanner_free_state(state);
+	//scanner_free_state(state);
 }
 
 void repl() {

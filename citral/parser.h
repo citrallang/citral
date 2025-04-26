@@ -5,7 +5,7 @@
 
 typedef enum astConstant {
 	CONST_FLOAT, CONST_DOUBLE, CONST_UI8,  CONST_I8, CONST_UI16, CONST_I16, CONST_UI32, CONST_I32, CONST_UI64, CONST_I64, CONST_PTR, CONST_CHAR, CONST_STR,
-};
+} astConstant;
 
 typedef enum astType {
 	//statements
@@ -15,7 +15,8 @@ typedef enum astType {
 	AST_MODIFY, AST_LOCALDECL, AST_GLOBALDECL,
 	AST_INC, AST_DEC,
 
-	AST_CONSTANT,
+	//various literals
+	AST_NUMBER, AST_STRING, AST_IDENTIFIER,
 
 	//resultant arithmetic
 	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIV, AST_MOD, AST_POW,
@@ -26,6 +27,8 @@ typedef enum astType {
 
 	AST_ERROR, AST_NULL, AST_NOP, AST_EOF,
 } astType;
+
+
 
 typedef union astLiteralUnion {
 	float asFloat;
@@ -59,6 +62,7 @@ typedef struct parserState {
 	astNode* program;
 	size_t programSize;
 	size_t programCapacity;
+	uint8_t hadError;
 } parserState;
 
 
@@ -72,3 +76,4 @@ void parser_evaluate_ast_node(parserState* state, astNode* node);
 void parser_error(parserState* state, char* msg);
 astNode parser_scan_token(parserState* state);
 scannerToken parser_advance(parserState* state);
+astType parser_what_is_identifier(char* identifier, int len);
