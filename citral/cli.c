@@ -35,7 +35,7 @@ void load_source(char* src, int isHeap) {
 	scanner_dump_print_tokens(scanState);
 #endif
 	parserState* parseState = parser_create_state(scanState);
-	//parser_parse_state(parseState);
+	parser_evaluate(parseState);
 #ifdef PARSER_DEBUG
 	//parser_print_ast(parseState);
 #endif

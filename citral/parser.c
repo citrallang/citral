@@ -3,7 +3,11 @@
 #include "scanner.h"
 #include <stdio.h>
 parserState* parser_create_state(scannerState* encompassing) {
-
+	parserState* state = xmalloc(sizeof(parserState));
+	state->encompassingScanner = encompassing;
+	state->program = xmalloc(sizeof(astNode) * 16);
+	state->programCapacity = 16;
+	return state;
 }
 
 parserState* parser_evaluate_scanner(scannerState* scState) {
@@ -12,31 +16,30 @@ parserState* parser_evaluate_scanner(scannerState* scState) {
 
 void parser_error(parserState* state, char* msg) {
 	state->hadError = 1;
-	char* cur1 = state->encompassingScanner->cur;
-	char* cur2 = cur1;
-	int len = 0;
+	char* start = state->encompassingScanner->cur-1;
+	int distanceFromStart = 1;
 	for (;;) {
-		uint8_t flag = 0;
-		if (cur1 < state->encompassingScanner->buf || *cur1 == '\n') {
-			flag++;
-		}
-		else {
-			cur1++;
-			len++;
-		}
-		if (cur2 >= state->encompassingScanner->buf + state->encompassingScanner->bufCapacity || *cur2 == '\n') {
-			flag++;
-		}
-		else {
-			cur2--;
-			len++;
-		}
-		if (flag == 2) {
+		start--;
+		if (start < state->encompassingScanner->buf || *start == '\n') {
+			start++;
 			break;
 		}
+		distanceFromStart++;
 	}
-	printf("Parse error at line %d: \"%.*s\". Error message: %s", state->encompassingScanner->curLine,
-		get_line_from_ptr(state->encompassingScanner->cur, state->encompassingScanner->buf + state->encompassingScanner->bufCapacity), msg);
+	char* end = state->encompassingScanner->cur-1;
+	for (;;) {
+		end++;
+		if (end > state->encompassingScanner->buf + state->encompassingScanner->bufCapacity
+			|| *end == '\n') 
+		{
+			end--;
+			break;
+		}
+		distanceFromStart++;
+	}
+
+	printf("Parse error at line %d: \"%.*s\". Error message: %s\n", state->encompassingScanner->curLine,
+		distanceFromStart, start, msg);
 
 }
 
@@ -59,6 +62,9 @@ void parser_evaluate(parserState* state) {
 				state->hadError = 1;
 			}
 			}
+		}
+		default: {
+			parser_error(state, "Unexpected token.");
 		}
 		}
 	}
