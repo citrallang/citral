@@ -8,7 +8,7 @@ static inline void* xmalloc(size_t size) {
 	memset(block, 0, size);
 	return block;
 }
-
+#define new(type) xmalloc(sizeof(type))
 static inline void* xmalloc_noinit(size_t size) {
 	void* block = malloc(size);
 	if (block == NULL) {
