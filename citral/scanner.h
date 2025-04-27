@@ -17,7 +17,7 @@ typedef enum TokenType {
 	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
 } TokenType;
 
-const char* TOKEN_NAMES[] = {
+static const char* TOKEN_NAMES[] = {
 	"+", "-", "*", "/", "%", "^", "~", 
 	"+=", "-=", "*=", "/=", "%=", "^=", "++", "--",
 
@@ -26,7 +26,7 @@ const char* TOKEN_NAMES[] = {
 	"(", ")", "[", "]", "{", "}", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR",
 };
 
-const char* UNEXPECTED_CHARACTER[] = {
+static const char* UNEXPECTED_TOKEN[] = {
 	"Unexpected token: '+'", "Unexpected token: '-'", "Unexpected token: '*'", "Unexpected token: '/'", "Unexpected token: '%'", "Unexpected token: '^'", "Unexpected token: '~'", 
 	"Unexpected token: '+='", "Unexpected token: '-='", "Unexpected token: '*='", "Unexpected token: '/='", "Unexpected token: '%='", "Unexpected token: '^='", "Unexpected token: '++'", "Unexpected token: '--'", 
 	"Unexpected token: '='", "Unexpected token: '=='", "Unexpected token: '!'", "Unexpected token: '!='", "Unexpected token: '&&'", "Unexpected token: '||'", 

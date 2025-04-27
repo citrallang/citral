@@ -67,7 +67,7 @@ void parser_evaluate(parserState* state) {
 			}
 		}
 		default: {
-			parser_error(state, "Unexpected token.");
+			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
 		}
 		}
 	}
