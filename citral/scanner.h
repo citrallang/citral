@@ -5,7 +5,7 @@
 
 
 typedef enum TokenType {
-	TOKEN_PLUS, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
+	TOKEN_PLUS=0, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
 	TOKEN_PLUSEQ, TOKEN_MINUSEQ, TOKEN_STAREQ, TOKEN_SLASHEQ, TOKEN_PERCENTEQ, TOKEN_CARETEQ, TOKEN_PLUSPLUS, TOKEN_MINUSMINUS,
 
 	TOKEN_EQ, TOKEN_EQEQ, TOKEN_BANG, TOKEN_BANGEQ, TOKEN_AMPAMP, TOKEN_BARBAR,
@@ -16,6 +16,24 @@ typedef enum TokenType {
 
 	TOKEN_EOF, TOKEN_START, TOKEN_ERROR,
 } TokenType;
+
+const char* TOKEN_NAMES[] = {
+	"+", "-", "*", "/", "%", "^", "~", 
+	"+=", "-=", "*=", "/=", "%=", "^=", "++", "--",
+
+	"=", "==", "!", "!=", "&&", "||",
+
+	"(", ")", "[", "]", "{", "}", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR",
+};
+
+const char* UNEXPECTED_CHARACTER[] = {
+	"Unexpected token: '+'", "Unexpected token: '-'", "Unexpected token: '*'", "Unexpected token: '/'", "Unexpected token: '%'", "Unexpected token: '^'", "Unexpected token: '~'", 
+	"Unexpected token: '+='", "Unexpected token: '-='", "Unexpected token: '*='", "Unexpected token: '/='", "Unexpected token: '%='", "Unexpected token: '^='", "Unexpected token: '++'", "Unexpected token: '--'", 
+	"Unexpected token: '='", "Unexpected token: '=='", "Unexpected token: '!'", "Unexpected token: '!='", "Unexpected token: '&&'", "Unexpected token: '||'", 
+	"Unexpected token: '('", "Unexpected token: ')'", "Unexpected token: '['", "Unexpected token: ']'", "Unexpected token: '{'", "Unexpected token: '}'", 
+	"Unexpected token: 'STRING'", "Unexpected token: 'INT'", "Unexpected token: 'FLOAT'", "Unexpected token: 'IDENTIFIER'", "Unexpected token: 'CHAR'", 
+	"Unexpected token: 'END OF FILE'", "Unexpected token: 'START OF FILE'", "Unexpected token: 'ERROR'",
+};
 
 typedef struct scannerToken {
 	TokenType type;
@@ -57,4 +75,3 @@ void scanner_long_comment(scannerState* state);
 int scanner_is_alpha(char isThis);
 int scanner_is_numeric(char isThis);
 void scanner_free_state(scannerState* state);
-char* get_line_from_ptr(char* pos, char* end);

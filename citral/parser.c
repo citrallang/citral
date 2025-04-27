@@ -15,6 +15,9 @@ parserState* parser_evaluate_scanner(scannerState* scState) {
 }
 
 void parser_error(parserState* state, char* msg) {
+	if (state->hadError) {
+		return; //later we can start resetting at statement borders or whatever
+	}
 	state->hadError = 1;
 	char* start = state->encompassingScanner->cur-1;
 	int distanceFromStart = 1;
@@ -71,7 +74,8 @@ void parser_evaluate(parserState* state) {
 	exit_parser_evaluate:;
 }
 
-astType parser_what_is_identifier(char* identifier, int len){}
+astType parser_what_is_identifier(char* identifier, int len) {
+}
 
 scannerToken parser_advance(parserState* state) {
 	return scanner_next_token(state->encompassingScanner);
