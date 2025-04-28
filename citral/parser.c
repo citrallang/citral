@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "scanner.h"
 #include <stdio.h>
+#include "hashmap.h"
 parserState* parser_create_state(scannerState* encompassing) {
 	parserState* state = xmalloc(sizeof(parserState));
 	state->encompassingScanner = encompassing;

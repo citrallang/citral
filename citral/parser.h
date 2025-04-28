@@ -62,7 +62,7 @@ typedef struct parserState {
 	astNode* program;
 	size_t programSize;
 	size_t programCapacity;
-	uint8_t hadError;
+	unsigned int hadError : 1;
 } parserState;
 
 

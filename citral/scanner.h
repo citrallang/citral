@@ -37,9 +37,9 @@ static const char* UNEXPECTED_TOKEN[] = {
 
 typedef struct scannerToken {
 	TokenType type;
+	int line;
 	char* posInSrc;
 	size_t numChars;
-	int line;
 } scannerToken;
 typedef struct scannerState {
 	char* buf;
