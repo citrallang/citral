@@ -61,7 +61,7 @@ scannerToken scanner_create_token(scannerState* state, TokenType type, size_t si
 char scanner_advance(scannerState* state);
 #define scanner_backtrack(state) state->cur-- 
 uint8_t scanner_match(scannerState* state, char matchAgainst);
-char scanner_expect(scannerState* state, char expectThis); //todo
+char scanner_expect(scannerState* state, char expectThis);
 char scanner_peek(scannerState* state);
 uint8_t scanner_is_at_end(scannerState* state);
 void scanner_insert_token(scannerState* state, scannerToken token);
