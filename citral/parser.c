@@ -74,17 +74,34 @@ void parser_evaluate(parserState* state) {
 	exit_parser_evaluate:;
 }
 
+
+
+
+
 astType parser_what_is_identifier(char* identifier, int len) {
+
 }
 
 scannerToken parser_advance(parserState* state) {
 	return scanner_next_token(state->encompassingScanner);
 }
-
+	
 
 astNode parser_create_node(astType type) {
-
+	astNode node = {
+		.left = NULL,
+		.right = NULL,
+		.literal = 0,
+		.type = type
+	};
+	return node;
 }
 astNode parser_create_node_literal(astType type, astLiteralUnion literal) {
-
+	astNode node = {
+		.left = NULL,
+		.right = NULL,
+		.literal = literal,
+		.type = type
+	};
+	return node;
 }
