@@ -42,7 +42,7 @@ void parser_error(parserState* state, char* msg) {
 		distanceFromStart++;
 	}
 
-	printf("Parse error at line %d: \"%.*s\". Error message: %s\n", state->encompassingScanner->curLine,
+	fprintf(stderr, "Parse error at line %d: \"%.*s\". Error message: %s\n", state->encompassingScanner->curLine,
 		distanceFromStart, start, msg);
 
 }
