@@ -33,3 +33,14 @@ typedef struct HashTable {
 	unsigned int maxNodes;
 	HashFunc hasher; //idk if i want to do this but hey
 } HashTable;
+
+
+
+static HashTable* spawn_hashtable() {
+	HashTable* tbl = xmalloc(sizeof(HashTable));
+	//tbl->hasher = INSERT_HASHER_HERE
+	//todo
+	tbl->maxNodes = 16;
+	tbl->nodes = xmalloc(sizeof(HashNode) * 16);
+	return tbl;
+}
