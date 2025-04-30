@@ -34,7 +34,16 @@ typedef struct HashTable {
 	HashFunc hasher; //idk if i want to do this but hey
 } HashTable;
 
-
+//bad hash function, will replace later
+//todo
+long hash_str(char* str, unsigned int len) {
+	long hash = 0;
+	for (int i = 0; i < len; i++) {
+		hash <<= 7;
+		hash += (str[i]*13);
+	}
+	return hash;
+}
 
 static HashTable* spawn_hashtable() {
 	HashTable* tbl = xmalloc(sizeof(HashTable));
