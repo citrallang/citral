@@ -32,6 +32,7 @@ typedef struct HashTable {
 	unsigned int numNodes;
 	unsigned int maxNodes;
 	HashFunc hasher; //idk if i want to do this but hey
+	unsigned int hashFuncUsed : 1;
 } HashTable;
 
 //bad hash function, will replace later
@@ -47,8 +48,7 @@ long hash_str(char* str, unsigned int len) {
 
 static HashTable* spawn_hashtable() {
 	HashTable* tbl = xmalloc(sizeof(HashTable));
-	//tbl->hasher = INSERT_HASHER_HERE
-	//todo
+	tbl->hasher.asLongFunc = hash_str;
 	tbl->maxNodes = 16;
 	tbl->nodes = xmalloc(sizeof(HashNode) * 16);
 	return tbl;
