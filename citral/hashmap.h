@@ -37,7 +37,7 @@ typedef struct HashTable {
 
 //bad hash function, will replace later
 //todo
-long hash_str(char* str, unsigned int len) {
+static long hash_str(char* str, unsigned int len) {
 	long hash = 0;
 	for (int i = 0; i < len; i++) {
 		hash <<= 7;
