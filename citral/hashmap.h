@@ -15,7 +15,7 @@ typedef struct HashNode {
 	HashKeyVal key;
 	HashKeyVal val;
 	unsigned int keySize; //these can be used for additional info if the type bits are set to the non pointer values
-	unsigned int valsize;
+	unsigned int valSize;
 	unsigned int keyType : 2;
 	unsigned int valType : 2;
 	unsigned int isGrave : 1;
@@ -35,6 +35,11 @@ typedef struct HashTable {
 	unsigned int hashFuncUsed : 1;
 } HashTable;
 
+static long hash_str(char* str, unsigned int len);
+static HashTable* spawn_hashtable();
+static void free_hashtable();
+static uint8_t main_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal value, unsigned int keySize, unsigned int valSize);
+
 //bad hash function, will replace later
 //todo
 static long hash_str(char* str, unsigned int len) {
@@ -53,3 +58,4 @@ static HashTable* spawn_hashtable() {
 	tbl->nodes = xmalloc(sizeof(HashNode) * 16);
 	return tbl;
 }
+
