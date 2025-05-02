@@ -12,6 +12,10 @@ typedef union HashKeyVal {
 	int64_t asI64;
 } HashKeyVal;
 
+typedef enum HashValType {
+	TYPE_POINTER, TYPE_UINT64, TYPE_DOUBLE, TYPE_I64,
+} HashValType;
+
 typedef struct HashNode {
 	HashKeyVal key;
 	long hash;
@@ -21,7 +25,7 @@ typedef struct HashNode {
 	unsigned int keyType : 2;
 	unsigned int valType : 2;
 	unsigned int isGrave : 1;
-	unsigned int isEmpty : 1;
+	unsigned int isFull : 1;
 } HashNode;
 
 typedef struct HashTable {
@@ -34,7 +38,7 @@ typedef struct HashTable {
 static long hash_str(char*, unsigned int);
 static HashTable* spawn_hashtable();
 static void free_hashtable(HashTable*);
-static uint8_t internal_insert_into_hashtable(HashTable*, HashKeyVal, HashKeyVal, unsigned int, unsigned int);
+static unsigned int internal_insert_into_hashtable(HashTable*, HashKeyVal, HashKeyVal, unsigned int, unsigned int, HashValType, HashValType);
 static void internal_remove_from_hashtable(HashTable*, HashKeyVal, unsigned int);
 static void resize_hashtable(HashTable*, unsigned int);
 static unsigned int internal_get_first_empty(HashTable* tbl, long hash);
@@ -83,7 +87,7 @@ static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKe
 	long currentIndex = hash % tbl->maxNodes;
 	for (;;) {
 		HashNode currentNode = tbl->nodes[currentIndex];
-		if (currentNode.isEmpty && !currentNode.isGrave) {
+		if (!currentNode.isFull && !currentNode.isGrave) {
 			return UINT32_MAX;
 		}
 		if (currentNode.hash == hash) {
@@ -107,7 +111,7 @@ static unsigned int internal_get_first_empty(HashTable* tbl, long hash) {
 	long step = 0;
 	long currentIndex = hash % tbl->maxNodes;
 	for (;;) {
-		if (tbl->nodes[currentIndex].isEmpty) {
+		if (!tbl->nodes[currentIndex].isFull) {
 			return currentIndex;
 		}
 		step++;
@@ -115,7 +119,26 @@ static unsigned int internal_get_first_empty(HashTable* tbl, long hash) {
 	}
 }
 
-static uint8_t internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal val, unsigned int keySize, unsigned int valSize) {
-	
-	unsigned int firstSlot = internal_get_first_empty(tbl, get_hash(tbl, key, keySize));
+static unsigned int internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal val, unsigned int keySize, unsigned int valSize, HashValType keyType, HashValType valType) {
+	long hash = get_hash(tbl, key, keySize);
+	unsigned int firstSlot = internal_get_first_empty(tbl, hash);
+	HashNode t = {
+		.hash = hash,
+		.key = key,
+		.keySize = keySize,
+		.keyType = keyType,
+		.val = val,
+		.valSize = valSize,
+		.valType = valType,
+	};
+	tbl->nodes[firstSlot] = t;
+	tbl->numNodes++;
+	if (++(tbl->numNodes) > tbl->maxNodes * 0.6) {
+		resize_hashtable(tbl, tbl->maxNodes * 1.5);
+	}
+	return firstSlot;
+}
+
+static void resize_hashtable(HashTable* tbl, unsigned int newSize) {
+
 }
