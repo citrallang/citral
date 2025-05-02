@@ -80,13 +80,13 @@ static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKe
 	for (;;) {
 		HashNode currentNode = tbl->nodes[currentIndex];
 		if (currentNode.isEmpty && !currentNode.isGrave) {
-			return tbl->maxNodes + 1;
+			return UINT32_MAX;
 		}
 		if (currentNode.hash == hash) {
 			if (key.asI64 == currentNode.key.asI64) {
 				return currentIndex;
 			}
-			if (keySize < UINT32_MAX && currentNode.keySize < UINT32_MAX) { //keysize is ui32 max if the key isnt a pointer
+			if (keySize < UINT32_MAX && currentNode.keySize < UINT32_MAX) {
 				if (keySize == currentNode.keySize) {
 					if (memcmp(key.asPtr, currentNode.key.asPtr, keySize) == 0) {
 						return currentIndex;
