@@ -98,8 +98,7 @@ void parser_add_str(char* literal, AstType type) {
 }
 
 void parser_initiate_keyword_list() {
-	
-
+	parser_add_str("for", AST_FOR);
 }
 
 AstType parser_what_is_identifier(char* identifier, int len) {
