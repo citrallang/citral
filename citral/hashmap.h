@@ -24,17 +24,11 @@ typedef struct HashNode {
 	unsigned int isEmpty : 1;
 } HashNode;
 
-typedef union HashFunc {
-	long (*asPtrFunc)(char*, unsigned int);
-	long (*asLongFunc)(long);
-} HashFunc;
-
 typedef struct HashTable {
 	HashNode* nodes;
 	unsigned int numNodes;
 	unsigned int maxNodes;
-	HashFunc hasher; //idk if i want to do this but hey
-	unsigned int hashFuncUsed : 1;
+	unsigned int usePrimitiveHasher : 1;
 } HashTable;
 
 static long hash_str(char* str, unsigned int len);
@@ -64,19 +58,16 @@ static void free_hashtable(HashTable* tbl) {
 
 static HashTable* spawn_hashtable() {
 	HashTable* tbl = xmalloc(sizeof(HashTable));
-	tbl->hasher.asLongFunc = hash_str;
 	tbl->maxNodes = 16;
 	tbl->nodes = xmalloc(sizeof(HashNode) * 16);
 	return tbl;
 }
 
-static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize, uint8_t func) {
-	long hash;
-	if (func == 0)
-		hash = tbl->hasher.asPtrFunc(key.asPtr, keySize);
-	else
-		hash = tbl->hasher.asLongFunc(key.asI64);
-	return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash);
+static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
+	if (!tbl->usePrimitiveHasher)
+		return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash_str(key.asPtr, keySize));
+	//else
+		//return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash_str(key.asPtr, keySize));
 }
 
 static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, uint32_t keySize, long hash) {
