@@ -39,7 +39,7 @@ static long hash_str(char*, unsigned int);
 static HashTable* spawn_hashtable();
 static void free_hashtable(HashTable*);
 static unsigned int internal_insert_into_hashtable(HashTable*, HashKeyVal, HashKeyVal, unsigned int, unsigned int, HashValType, HashValType);
-static void internal_remove_from_hashtable(HashTable*, HashKeyVal, unsigned int);
+static HashKeyVal internal_remove_from_hashtable(HashTable*, HashKeyVal, unsigned int);
 static void resize_hashtable(HashTable*, unsigned int);
 static unsigned int internal_get_first_empty(HashTable* tbl, long hash);
 static unsigned int internal_get_pos_of_element(HashTable*, HashKeyVal, unsigned int);
@@ -140,5 +140,28 @@ static unsigned int internal_insert_into_hashtable(HashTable* tbl, HashKeyVal ke
 }
 
 static void resize_hashtable(HashTable* tbl, unsigned int newSize) {
+	size_t new_amt = newSize * sizeof(HashNode);
+	HashNode* new_nodes = xmalloc(new_amt);
+	HashTable newtbl = {
+		.nodes = new_nodes,
+		.maxNodes = newSize,
+		.numNodes = 0,
+		.usePrimitiveHasher = tbl->usePrimitiveHasher
+	};
+	HashTable* tbl_p = &newtbl;
+	for (int i = 0; i < tbl->maxNodes; i++) {
+		HashNode cur = tbl->nodes[i];
+		if (cur.isFull) {
+			internal_insert_into_hashtable(tbl_p, cur.key, cur.val, cur.keySize, cur.valSize, cur.keyType, cur.valType);
+		}
+	}
+	tbl->nodes = new_nodes;
+	tbl->maxNodes = new_amt;
+}
 
+static HashKeyVal internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
+	unsigned int pos = internal_get_pos_of_element(tbl, key, keySize);
+	tbl->nodes[pos].isGrave = 1;
+	tbl->numNodes--;
+	return tbl->nodes[pos].val;
 }
