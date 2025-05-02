@@ -65,7 +65,11 @@ typedef struct ParserState {
 	unsigned int hadError : 1;
 } ParserState;
 
-
+typedef struct ParserKeyword {
+	char* literal;
+	unsigned int literalLen;
+	AstType whatAreYou;
+} ParserKeyword;
 
 AstNode parser_create_node(AstType type);
 AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal);
@@ -77,3 +81,4 @@ void parser_error(ParserState* state, char* msg);
 AstNode parser_scan_token(ParserState* state);
 ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
+void parser_initiate_keyword_list();

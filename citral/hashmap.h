@@ -44,7 +44,7 @@ static void resize_hashtable(HashTable*, unsigned int);
 static unsigned int internal_get_first_empty(HashTable* tbl, long hash);
 static unsigned int internal_get_pos_of_element(HashTable*, HashKeyVal, unsigned int);
 static unsigned int internal_get_pos_of_element_with_hash(HashTable*, HashKeyVal, uint32_t, long);
-
+static unsigned int insert_pointers_to_hashtable(HashTable*, void*, void*, unsigned int, unsigned int);
 //bad hash function, will replace later
 //todo
 static long hash_str(char* str, unsigned int len) {
@@ -164,4 +164,10 @@ static HashKeyVal internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key,
 	tbl->nodes[pos].isGrave = 1;
 	tbl->numNodes--;
 	return tbl->nodes[pos].val;
+}
+
+static unsigned int insert_pointers_to_hashtable(HashTable* tbl, void* key, void* val, unsigned int keySize, unsigned int valSize) {
+	HashKeyVal k = { .asPtr = key };
+	HashKeyVal v = { .asPtr = val };
+	return internal_insert_into_hashtable(tbl, k, v, keySize, valSize, TYPE_POINTER, TYPE_POINTER);
 }

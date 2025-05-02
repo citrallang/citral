@@ -75,10 +75,32 @@ void parser_evaluate(ParserState* state) {
 	}
 	exit_parser_evaluate:;
 }
+#define MAX_KEYWORDS 256
+HashNode keywords[MAX_KEYWORDS]; //we can increase this later if necessary
+HashTable parser_reserved_keywords = {
+	.nodes = &keywords,
+	.maxNodes = MAX_KEYWORDS
+};
 
+void parser_add_keyword_to_list(ParserKeyword word) {
+	ParserKeyword* dynamic = xmalloc(sizeof(ParserKeyword));
+	memcpy(dynamic, &word, sizeof(ParserKeyword));
+	insert_pointers_to_hashtable(&parser_reserved_keywords, dynamic->literal, dynamic, dynamic->literalLen, sizeof(ParserKeyword)); //todo: improve this locality
+}
 
+void parser_add_str(char* literal, AstType type) {
+	ParserKeyword word = {
+		.literal = literal,
+		.literalLen = strlen(literal),
+		.whatAreYou = type
+	};
+	parser_add_keyword_to_list(word);
+}
 
+void parser_initiate_keyword_list() {
+	
 
+}
 
 AstType parser_what_is_identifier(char* identifier, int len) {
 
