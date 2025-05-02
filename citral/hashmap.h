@@ -39,7 +39,7 @@ typedef struct HashTable {
 
 static long hash_str(char* str, unsigned int len);
 static HashTable* spawn_hashtable();
-static void free_hashtable();
+static void free_hashtable(HashTable* tbl);
 static uint8_t internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal value, unsigned int keySize, unsigned int valSize);
 static void internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize);
 static void resize_hashtable(HashTable* tbl, unsigned int newSize);
@@ -55,6 +55,11 @@ static long hash_str(char* str, unsigned int len) {
 		hash += (str[i]*13);
 	}
 	return hash;
+}
+
+static void free_hashtable(HashTable* tbl) {
+	free(tbl->nodes);
+	free(tbl);
 }
 
 static HashTable* spawn_hashtable() {
