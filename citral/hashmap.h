@@ -64,6 +64,13 @@ static HashTable* spawn_hashtable() {
 	return tbl;
 }
 
+static long get_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
+	if (!tbl->usePrimitiveHasher) {
+		return hash_str(key.asPtr, keySize);
+	}
+	return *(long*)0;
+}
+
 static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
 	if (!tbl->usePrimitiveHasher)
 		return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash_str(key.asPtr, keySize));
@@ -83,7 +90,7 @@ static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKe
 			if (key.asI64 == currentNode.key.asI64) {
 				return currentIndex;
 			}
-			if (keySize < UINT32_MAX && currentNode.keySize < UINT32_MAX) {
+			if (!tbl->usePrimitiveHasher) {
 				if (keySize == currentNode.keySize) {
 					if (memcmp(key.asPtr, currentNode.key.asPtr, keySize) == 0) {
 						return currentIndex;
@@ -106,4 +113,9 @@ static unsigned int internal_get_first_empty(HashTable* tbl, long hash) {
 		step++;
 		currentIndex = (currentIndex + (step ^ 2)) % tbl->maxNodes;
 	}
+}
+
+static uint8_t internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal val, unsigned int keySize, unsigned int valSize) {
+	
+	unsigned int firstSlot = internal_get_first_empty(tbl, get_hash(tbl, key, keySize));
 }

@@ -65,6 +65,7 @@ void parser_evaluate(parserState* state) {
 				parser_error(state, "Expected statement, found identifier.");
 				state->hadError = 1;
 			}
+			default:{}
 			}
 		}
 		default: {
