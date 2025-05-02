@@ -1,4 +1,5 @@
 #pragma once
+#include "stdlib.h"
 #include "allocator.h"
 #include "stdint.h"
 //ALL METHODS HERE SHOULD BE STATIC
@@ -73,13 +74,27 @@ static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, 
 	return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash);
 }
 
-static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize, long hash) {
+static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, uint32_t keySize, long hash) {
 	long step = 0;
-	long current = hash % tbl->maxNodes;
+	long currentIndex = hash % tbl->maxNodes;
 	for (;;) {
-		
-
+		HashNode currentNode = tbl->nodes[currentIndex];
+		if (currentNode.isEmpty && !currentNode.isGrave) {
+			return tbl->maxNodes + 1;
+		}
+		if (currentNode.hash == hash) {
+			if (key.asI64 == currentNode.key.asI64) {
+				return currentIndex;
+			}
+			if (keySize < UINT32_MAX && currentNode.keySize < UINT32_MAX) { //keysize is ui32 max if the key isnt a pointer
+				if (keySize == currentNode.keySize) {
+					if (memcmp(key.asPtr, currentNode.key.asPtr, keySize) == 0) {
+						return currentIndex;
+					}
+				}
+			}
+		}
 		step++;
-		current = (current + (step ^ 2)) % tbl->maxNodes;
+		currentIndex = (currentIndex + (step ^ 2)) % tbl->maxNodes;
 	}
 }
