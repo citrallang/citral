@@ -39,6 +39,8 @@ static long hash_str(char* str, unsigned int len);
 static HashTable* spawn_hashtable();
 static void free_hashtable();
 static uint8_t main_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal value, unsigned int keySize, unsigned int valSize);
+static void main_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize);
+static void resize_hashtable(HashTable* tbl, unsigned int newSize);
 
 //bad hash function, will replace later
 //todo
