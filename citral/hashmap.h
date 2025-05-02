@@ -43,6 +43,8 @@ static uint8_t internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, Ha
 static void internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize);
 static void resize_hashtable(HashTable* tbl, unsigned int newSize);
 static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize);
+static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize, long hash);
+
 //bad hash function, will replace later
 //todo
 static long hash_str(char* str, unsigned int len) {
@@ -62,6 +64,15 @@ static HashTable* spawn_hashtable() {
 	return tbl;
 }
 
-static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
+static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize, uint8_t func) {
+	long hash;
+	if (func == 0)
+		hash = tbl->hasher.asPtrFunc(key.asPtr, keySize);
+	else
+		hash = tbl->hasher.asLongFunc(key.asI64);
+	return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash);
+}
+
+static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize, long hash) {
 
 }
