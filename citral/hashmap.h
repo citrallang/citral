@@ -74,5 +74,12 @@ static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, 
 }
 
 static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize, long hash) {
+	long step = 0;
+	long current = hash % tbl->maxNodes;
+	for (;;) {
+		
 
+		step++;
+		current = (current + (step ^ 2)) % tbl->maxNodes;
+	}
 }
