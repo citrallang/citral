@@ -31,14 +31,14 @@ typedef struct HashTable {
 	unsigned int usePrimitiveHasher : 1;
 } HashTable;
 
-static long hash_str(char* str, unsigned int len);
+static long hash_str(char*, unsigned int);
 static HashTable* spawn_hashtable();
-static void free_hashtable(HashTable* tbl);
-static uint8_t internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal value, unsigned int keySize, unsigned int valSize);
-static void internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize);
-static void resize_hashtable(HashTable* tbl, unsigned int newSize);
-static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize);
-static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize, long hash);
+static void free_hashtable(HashTable*);
+static uint8_t internal_insert_into_hashtable(HashTable*, HashKeyVal, HashKeyVal, unsigned int, unsigned int);
+static void internal_remove_from_hashtable(HashTable*, HashKeyVal, unsigned int);
+static void resize_hashtable(HashTable*, unsigned int);
+static unsigned int internal_get_pos_of_element(HashTable*, HashKeyVal, unsigned int);
+static unsigned int internal_get_pos_of_element_with_hash(HashTable*, HashKeyVal, uint32_t, long);
 
 //bad hash function, will replace later
 //todo
