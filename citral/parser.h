@@ -28,7 +28,7 @@ typedef enum AstType {
 	AST_ERROR, AST_NULL, AST_NOP, AST_EOF,
 } AstType;
 
-
+//
 
 typedef union AstLiteralUnion {
 	float asFloat;
