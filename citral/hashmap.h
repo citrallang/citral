@@ -37,6 +37,7 @@ static void free_hashtable(HashTable*);
 static uint8_t internal_insert_into_hashtable(HashTable*, HashKeyVal, HashKeyVal, unsigned int, unsigned int);
 static void internal_remove_from_hashtable(HashTable*, HashKeyVal, unsigned int);
 static void resize_hashtable(HashTable*, unsigned int);
+static unsigned int internal_get_first_empty(HashTable* tbl, long hash);
 static unsigned int internal_get_pos_of_element(HashTable*, HashKeyVal, unsigned int);
 static unsigned int internal_get_pos_of_element_with_hash(HashTable*, HashKeyVal, uint32_t, long);
 
@@ -89,6 +90,18 @@ static unsigned int internal_get_pos_of_element_with_hash(HashTable* tbl, HashKe
 					}
 				}
 			}
+		}
+		step++;
+		currentIndex = (currentIndex + (step ^ 2)) % tbl->maxNodes;
+	}
+}
+
+static unsigned int internal_get_first_empty(HashTable* tbl, long hash) {
+	long step = 0;
+	long currentIndex = hash % tbl->maxNodes;
+	for (;;) {
+		if (tbl->nodes[currentIndex].isEmpty) {
+			return currentIndex;
 		}
 		step++;
 		currentIndex = (currentIndex + (step ^ 2)) % tbl->maxNodes;
