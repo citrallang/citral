@@ -3,11 +3,11 @@
 #include "allocator.h"
 #include <stdint.h>
 
-typedef enum astConstant {
+typedef enum AstConstant {
 	CONST_FLOAT, CONST_DOUBLE, CONST_UI8,  CONST_I8, CONST_UI16, CONST_I16, CONST_UI32, CONST_I32, CONST_UI64, CONST_I64, CONST_PTR, CONST_CHAR, CONST_STR,
-} astConstant;
+} AstConstant;
 
-typedef enum astType {
+typedef enum AstType {
 	//statements
 	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_SWITCH, AST_LOOP, AST_RETURN,
 
@@ -26,11 +26,11 @@ typedef enum astType {
 	AST_BLOCK,
 
 	AST_ERROR, AST_NULL, AST_NOP, AST_EOF,
-} astType;
+} AstType;
 
 
 
-typedef union astLiteralUnion {
+typedef union AstLiteralUnion {
 	float asFloat;
 	double asDouble;
 	char asChar;
@@ -44,36 +44,36 @@ typedef union astLiteralUnion {
 	int64_t asI64;
 	char* asStr;
 	void* asPtr;
-} astLiteralUnion;
+} AstLiteralUnion;
 
 
 
-typedef struct astNode {
-	astType type;
-	struct astNode* left; //if type == AST_BLOCK then this is an array of statements
-	struct astNode* right;
-	astLiteralUnion literal;
-} astNode;
+typedef struct AstNode {
+	AstType type;
+	struct AstNode* left; //if type == AST_BLOCK then this is an array of statements
+	struct AstNode* right;
+	AstLiteralUnion literal;
+} AstNode;
 
-typedef struct parserState {
-	scannerState* encompassingScanner;
+typedef struct ParserState {
+	ScannerState* encompassingScanner;
 	size_t scannerPos;
 
-	astNode* program;
+	AstNode* program;
 	size_t programSize;
 	size_t programCapacity;
 	unsigned int hadError : 1;
-} parserState;
+} ParserState;
 
 
 
-astNode parser_create_node(astType type);
-astNode parser_create_node_literal(astType type, astLiteralUnion literal);
-parserState* parser_create_state(scannerState* encompassing);
-parserState* parser_evaluate_scanner(scannerState* scState);
-void parser_evaluate(parserState* state);
-void parser_evaluate_ast_node(parserState* state, astNode* node);
-void parser_error(parserState* state, char* msg);
-astNode parser_scan_token(parserState* state);
-scannerToken parser_advance(parserState* state);
-astType parser_what_is_identifier(char* identifier, int len);
+AstNode parser_create_node(AstType type);
+AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal);
+ParserState* parser_create_state(ScannerState* encompassing);
+ParserState* parser_evaluate_scanner(ScannerState* scState);
+void parser_evaluate(ParserState* state);
+void parser_evaluate_ast_node(ParserState* state, AstNode* node);
+void parser_error(ParserState* state, char* msg);
+AstNode parser_scan_token(ParserState* state);
+ScannerToken parser_advance(ParserState* state);
+AstType parser_what_is_identifier(char* identifier, int len);

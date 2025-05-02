@@ -3,19 +3,19 @@
 #include "scanner.h"
 #include <stdio.h>
 #include "hashmap.h"
-parserState* parser_create_state(scannerState* encompassing) {
-	parserState* state = xmalloc(sizeof(parserState));
+ParserState* parser_create_state(ScannerState* encompassing) {
+	ParserState* state = xmalloc(sizeof(ParserState));
 	state->encompassingScanner = encompassing;
-	state->program = xmalloc(sizeof(astNode) * 16);
+	state->program = xmalloc(sizeof(AstNode) * 16);
 	state->programCapacity = 16;
 	return state;
 }
 
-parserState* parser_evaluate_scanner(scannerState* scState) {
+ParserState* parser_evaluate_scanner(ScannerState* scState) {
 
 }
 
-void parser_error(parserState* state, char* msg) {
+void parser_error(ParserState* state, char* msg) {
 	if (state->hadError) {
 		return; //later we can start resetting at statement borders or whatever
 	}
@@ -47,8 +47,8 @@ void parser_error(parserState* state, char* msg) {
 
 }
 
-void parser_evaluate(parserState* state) {
-	scannerToken tok;
+void parser_evaluate(ParserState* state) {
+	ScannerToken tok;
 	for (;;) {
 		tok = parser_advance(state);
 		switch (tok.type) {
@@ -57,7 +57,7 @@ void parser_evaluate(parserState* state) {
 		case TOKEN_IDENTIFIER: {
 			int chars = tok.numChars;
 			char* pos = tok.posInSrc;
-			astType typeOfIdentifier = parser_what_is_identifier(pos, chars);
+			AstType typeOfIdentifier = parser_what_is_identifier(pos, chars);
 			//if, for, break, return, variable, etc
 			switch (typeOfIdentifier)
 			{
@@ -80,17 +80,17 @@ void parser_evaluate(parserState* state) {
 
 
 
-astType parser_what_is_identifier(char* identifier, int len) {
+AstType parser_what_is_identifier(char* identifier, int len) {
 
 }
 
-scannerToken parser_advance(parserState* state) {
+ScannerToken parser_advance(ParserState* state) {
 	return scanner_next_token(state->encompassingScanner);
 }
 	
 
-astNode parser_create_node(astType type) {
-	astNode node = {
+AstNode parser_create_node(AstType type) {
+	AstNode node = {
 		.left = NULL,
 		.right = NULL,
 		.literal = 0,
@@ -98,8 +98,8 @@ astNode parser_create_node(astType type) {
 	};
 	return node;
 }
-astNode parser_create_node_literal(astType type, astLiteralUnion literal) {
-	astNode node = {
+AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal) {
+	AstNode node = {
 		.left = NULL,
 		.right = NULL,
 		.literal = literal,

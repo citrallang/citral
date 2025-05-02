@@ -35,43 +35,43 @@ static const char* UNEXPECTED_TOKEN[] = {
 	"Unexpected token: 'END OF FILE'", "Unexpected token: 'START OF FILE'", "Unexpected token: 'ERROR'",
 };
 
-typedef struct scannerToken {
+typedef struct ScannerToken {
 	TokenType type;
 	int line;
 	char* posInSrc;
 	size_t numChars;
-} scannerToken;
-typedef struct scannerState {
+} ScannerToken;
+typedef struct ScannerState {
 	char* buf;
 	size_t bufCapacity;
 	char* cur;
 	int curLine;
-	scannerToken* tokBuf;
+	ScannerToken* tokBuf;
 	size_t numToks;
 	size_t toksCapacity;
 	int hadError : 1;
 	int isSrcHeap : 1;
-} scannerState;
-scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
-void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
-scannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap);
-scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap);
-scannerToken scanner_next_token(scannerState* state);
-scannerToken scanner_create_token(scannerState* state, TokenType type, size_t size);
-char scanner_advance(scannerState* state);
+} ScannerState;
+ScannerToken scanner_error_token(ScannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
+void scanner_error(ScannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc);
+ScannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap);
+ScannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap);
+ScannerToken scanner_next_token(ScannerState* state);
+ScannerToken scanner_create_token(ScannerState* state, TokenType type, size_t size);
+char scanner_advance(ScannerState* state);
 #define scanner_backtrack(state) state->cur-- 
-uint8_t scanner_match(scannerState* state, char matchAgainst);
-char scanner_expect(scannerState* state, char expectThis);
-char scanner_peek(scannerState* state);
-uint8_t scanner_is_at_end(scannerState* state);
-void scanner_insert_token(scannerState* state, scannerToken token);
-void scanner_print_token(scannerToken tok);
-void scanner_dump_print_tokens(scannerState* state);
-scannerToken scanner_short_string(scannerState* state, char first);
-scannerToken scanner_number(scannerState* state, char first);
-scannerToken scanner_identifier(scannerState* state, char first);
-void scanner_short_comment(scannerState* state);
-void scanner_long_comment(scannerState* state);
+uint8_t scanner_match(ScannerState* state, char matchAgainst);
+char scanner_expect(ScannerState* state, char expectThis);
+char scanner_peek(ScannerState* state);
+uint8_t scanner_is_at_end(ScannerState* state);
+void scanner_insert_token(ScannerState* state, ScannerToken token);
+void scanner_print_token(ScannerToken tok);
+void scanner_dump_print_tokens(ScannerState* state);
+ScannerToken scanner_short_string(ScannerState* state, char first);
+ScannerToken scanner_number(ScannerState* state, char first);
+ScannerToken scanner_identifier(ScannerState* state, char first);
+void scanner_short_comment(ScannerState* state);
+void scanner_long_comment(ScannerState* state);
 int scanner_is_alpha(char isThis);
 int scanner_is_numeric(char isThis);
-void scanner_free_state(scannerState* state);
+void scanner_free_state(ScannerState* state);

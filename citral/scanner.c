@@ -1,25 +1,25 @@
 #include "scanner.h"
 #include "allocator.h"
 #include <stdio.h>
-char scanner_advance(scannerState* state) {
+char scanner_advance(ScannerState* state) {
 	if (scanner_is_at_end(state)) {
 		return 0;
 	}
 	return *(state->cur++);
 }
 
-char scanner_peek(scannerState* state) {
+char scanner_peek(ScannerState* state) {
 	return *state->cur;
 }
 
-uint8_t scanner_match(scannerState* state, char matchAgainst) {
+uint8_t scanner_match(ScannerState* state, char matchAgainst) {
 	char t = *state->cur;
 	uint8_t eq = t == matchAgainst;
 	state->cur += eq;
 	return eq;
 }
 
-char scanner_expect(scannerState* state, char expectThis) {
+char scanner_expect(ScannerState* state, char expectThis) {
 	char response = scanner_advance(state);
 	if (response != expectThis) {
 		char* buf = xmalloc(128);
@@ -37,15 +37,15 @@ char scanner_expect(scannerState* state, char expectThis) {
 	return response;
 }
 
-uint8_t scanner_is_at_end(scannerState* state) {
+uint8_t scanner_is_at_end(ScannerState* state) {
 	if ((state->cur - state->buf) >= (long long)state->bufCapacity) {
 		return 1;
 	}
 	return 0;
 }
 
-scannerToken scanner_create_token(scannerState* state, TokenType tokenType, size_t size) {
-	scannerToken tok = {
+ScannerToken scanner_create_token(ScannerState* state, TokenType tokenType, size_t size) {
+	ScannerToken tok = {
 		tokenType,
 		state->cur - size,
 		size,
@@ -54,25 +54,25 @@ scannerToken scanner_create_token(scannerState* state, TokenType tokenType, size
 	return tok;
 }
 
-scannerState* scanner_spawn_state() {
-	scannerState* state = xmalloc(sizeof(scannerState));
+ScannerState* scanner_spawn_state() {
+	ScannerState* state = xmalloc(sizeof(ScannerState));
 	return state;
 }
 
-void scanner_free_state(scannerState* state) {
+void scanner_free_state(ScannerState* state) {
 	free(state->tokBuf);
 	if (state->isSrcHeap)
 		free(state->buf);
 	free(state);
 }
 
-scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap) {
-	scannerState* state = xmalloc(sizeof(scannerState));
+ScannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap) {
+	ScannerState* state = xmalloc(sizeof(ScannerState));
 	state->buf = buf;
 	state->bufCapacity = bufSize;
 	state->cur = buf;
 	state->toksCapacity = 16;
-	state->tokBuf = xmalloc(sizeof(scannerToken) * 16);
+	state->tokBuf = xmalloc(sizeof(ScannerToken) * 16);
 	state->curLine = 1;
 	state->isSrcHeap = isHeap;
 	return state;
@@ -80,15 +80,15 @@ scannerState* scanner_create_state(char* buf, size_t bufSize, int isHeap) {
 
 
 
-void scanner_error(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
+void scanner_error(ScannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
 	scanner_insert_token(state, scanner_error_token(state, msg, posInSrc, numChars, lineInSrc));
 }
 
-scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
+ScannerToken scanner_error_token(ScannerState* state, char* msg, char* posInSrc, size_t numChars, int lineInSrc) {
 	fprintf(stderr, msg);
 	fprintf(stderr, "\n");
 	state->hadError = 1;
-	scannerToken tok = {
+	ScannerToken tok = {
 		.line = lineInSrc,
 		.numChars = numChars,
 		.posInSrc = posInSrc,
@@ -96,12 +96,12 @@ scannerToken scanner_error_token(scannerState* state, char* msg, char* posInSrc,
 	};
 	return tok;
 }
-scannerToken scanner_next_token(scannerState* state) {
+ScannerToken scanner_next_token(ScannerState* state) {
 scanner_start_of_next_token:
 	char next = scanner_advance(state);
 	switch (next) {
 	case '\0': {
-		scannerToken tok = scanner_create_token(state, TOKEN_EOF, 0);
+		ScannerToken tok = scanner_create_token(state, TOKEN_EOF, 0);
 		return tok;
 	}
 	case '+': {
@@ -228,7 +228,7 @@ scanner_start_of_next_token:
 	}
 }
 
-void scanner_insert_token(scannerState* state, scannerToken token) {
+void scanner_insert_token(ScannerState* state, ScannerToken token) {
 	if (!state->tokBuf) {
 		perror("Bad state.");
 		exit(3);
@@ -241,9 +241,9 @@ void scanner_insert_token(scannerState* state, scannerToken token) {
 
 
 
-scannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap) {
-	scannerState* state = scanner_create_state(src, bufSize, isHeap);
-	scannerToken last = {
+ScannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap) {
+	ScannerState* state = scanner_create_state(src, bufSize, isHeap);
+	ScannerToken last = {
 		.type = TOKEN_START,
 		.posInSrc = NULL,
 		.numChars = 0,
@@ -256,13 +256,13 @@ scannerState* scanner_scan_full_source(char* src, size_t bufSize, int isHeap) {
 	return state;
 }
 
-void scanner_dump_print_tokens(scannerState* state) {
+void scanner_dump_print_tokens(ScannerState* state) {
 	for (int i = 0; i < state->numToks; i++) {
 		scanner_print_token(state->tokBuf[i]);
 	}
 }
 
-void scanner_print_token(scannerToken tok) {
+void scanner_print_token(ScannerToken tok) {
 	switch (tok.type) {
 	case TOKEN_START:{
 		printf("Start of file\n");
@@ -290,7 +290,7 @@ int scanner_is_numeric(char isThis) {
 	return isThis >= '0' && isThis <= '9';
 }
 
-scannerToken scanner_short_string(scannerState* state, char first) {
+ScannerToken scanner_short_string(ScannerState* state, char first) {
 	int len = 2;
 	while ((first = scanner_advance(state)) != '"') {
 		if (first == '\n' || scanner_is_at_end(state)) {
@@ -304,7 +304,7 @@ scannerToken scanner_short_string(scannerState* state, char first) {
 	return scanner_create_token(state, TOKEN_STRING, len);
 }
 
-scannerToken scanner_number(scannerState* state, char current) {
+ScannerToken scanner_number(ScannerState* state, char current) {
 	uint8_t wasFloat = 0;
 	int len = 1;
 	if (current == '.') {
@@ -325,7 +325,7 @@ scannerToken scanner_number(scannerState* state, char current) {
 	return scanner_create_token(state, TOKEN_ERROR, 0);
 }
 
-scannerToken scanner_identifier(scannerState* state, char current) {
+ScannerToken scanner_identifier(ScannerState* state, char current) {
 	int len = 1;
 
 	while (current = scanner_advance(state)) {
@@ -338,11 +338,11 @@ scannerToken scanner_identifier(scannerState* state, char current) {
 	return scanner_create_token(state, TOKEN_IDENTIFIER, len);
 }
 
-void scanner_short_comment(scannerState* state) {
+void scanner_short_comment(ScannerState* state) {
 	do {} while (scanner_advance(state) != '\n' && !scanner_is_at_end(state));
 	state->curLine++;
 }
-void scanner_long_comment(scannerState* state) {
+void scanner_long_comment(ScannerState* state) {
 	int lineAtStart = state->curLine;
 	char* start = state->cur - 2;
 	while (!scanner_is_at_end(state)) {
