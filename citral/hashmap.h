@@ -13,6 +13,7 @@ typedef union HashKeyVal {
 
 typedef struct HashNode {
 	HashKeyVal key;
+	long hash;
 	HashKeyVal val;
 	unsigned int keySize; //these can be used for additional info if the type bits are set to the non pointer values
 	unsigned int valSize;
@@ -38,10 +39,10 @@ typedef struct HashTable {
 static long hash_str(char* str, unsigned int len);
 static HashTable* spawn_hashtable();
 static void free_hashtable();
-static uint8_t main_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal value, unsigned int keySize, unsigned int valSize);
-static void main_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize);
+static uint8_t internal_insert_into_hashtable(HashTable* tbl, HashKeyVal key, HashKeyVal value, unsigned int keySize, unsigned int valSize);
+static void internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize);
 static void resize_hashtable(HashTable* tbl, unsigned int newSize);
-
+static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize);
 //bad hash function, will replace later
 //todo
 static long hash_str(char* str, unsigned int len) {
@@ -61,3 +62,6 @@ static HashTable* spawn_hashtable() {
 	return tbl;
 }
 
+static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
+
+}
