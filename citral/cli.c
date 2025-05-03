@@ -54,7 +54,7 @@ void load_source(char* src, int isHeap) {
 	//todo: assemble
 	//todo: link to standard library (i need to make a standard library)
 	//todo: run code
-	//scanner_free_state(state);
+	parser_cleanup(parseState);
 }
 
 void repl() {

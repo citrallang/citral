@@ -59,7 +59,7 @@ typedef struct ParserState {
 	ScannerState* encompassingScanner;
 	size_t scannerPos;
 
-	AstNode* program;
+	AstNode** program;
 	size_t programSize;
 	size_t programCapacity;
 	unsigned int hadError : 1;
@@ -82,3 +82,4 @@ AstNode parser_scan_token(ParserState* state);
 ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
 void parser_initiate_keyword_list();
+void parser_cleanup(ParserState* state);

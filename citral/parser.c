@@ -147,3 +147,20 @@ AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal) {
 	};
 	return node;
 }
+
+void __parser_free_node(AstNode* node) {
+	if (node == NULL) return;
+	__parser_free_node(node->left);
+	__parser_free_node(node->right);
+	free(node);
+}
+
+void parser_cleanup(ParserState* state) {
+	scanner_free_state(state->encompassingScanner);
+	//free(state->program);
+	for (int i = 0; i < state->programSize; i++) {
+		__parser_free_node(state->program[i]);
+	}
+	free(state->program);
+}
+
