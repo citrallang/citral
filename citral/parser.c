@@ -3,6 +3,7 @@
 #include "scanner.h"
 #include <stdio.h>
 #include "hashmap.h"
+#include "config.h"
 ParserState* parser_create_state(ScannerState* encompassing) {
 	ParserState* state = xmalloc(sizeof(ParserState));
 	state->encompassingScanner = encompassing;
@@ -48,9 +49,13 @@ void parser_error(ParserState* state, char* msg) {
 }
 
 void parser_evaluate(ParserState* state) {
+	parser_initiate_keyword_list();
 	ScannerToken tok;
 	for (;;) {
 		tok = parser_advance(state);
+#ifdef SCANNER_DEBUG
+		scanner_print_token(tok);
+#endif
 		switch (tok.type) {
 		case TOKEN_EOF:
 			goto exit_parser_evaluate;
@@ -63,10 +68,14 @@ void parser_evaluate(ParserState* state) {
 			{
 			case AST_IDENTIFIER: {
 				parser_error(state, "Expected statement, found identifier.");
-				state->hadError = 1;
+				break;
+			}
+			case AST_FOR: {
+				break;
 			}
 			default:{}
 			}
+			break;
 		}
 		default: {
 			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
@@ -79,7 +88,9 @@ void parser_evaluate(ParserState* state) {
 HashNode keywords[MAX_KEYWORDS]; //we can increase this later if necessary
 HashTable parser_reserved_keywords = {
 	.nodes = &keywords,
-	.maxNodes = MAX_KEYWORDS
+	.maxNodes = MAX_KEYWORDS,
+	.numNodes = 0,
+	.usePrimitiveHasher = 0,
 };
 
 void parser_add_keyword_to_list(ParserKeyword word) {
@@ -96,13 +107,21 @@ void parser_add_str(char* literal, AstType type) {
 	};
 	parser_add_keyword_to_list(word);
 }
-
+int started = 0;
 void parser_initiate_keyword_list() {
+	if (started) {
+		return;
+	}
+	started = 1;
 	parser_add_str("for", AST_FOR);
+	parser_add_str("foreach", AST_FOREACH);
 }
 
 AstType parser_what_is_identifier(char* identifier, int len) {
-
+	ParserKeyword* kw = hashtable_lookup_string_ptr(&parser_reserved_keywords, identifier, len);
+	if (kw == NULL)
+		return AST_IDENTIFIER;
+	return kw->whatAreYou;
 }
 
 ScannerToken parser_advance(ParserState* state) {

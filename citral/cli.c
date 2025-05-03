@@ -31,9 +31,6 @@ char* cli_get_str() {
 void load_source(char* src, int isHeap) {
 	//todo: scan buf into a ScannerState
 	ScannerState* scanState = scanner_create_state(src, strlen(src), isHeap);
-#ifdef CLI_DEBUG
-	scanner_dump_print_tokens(scanState);
-#endif
 	ParserState* parseState = parser_create_state(scanState);
 	parser_evaluate(parseState);
 #ifdef PARSER_DEBUG

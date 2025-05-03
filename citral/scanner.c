@@ -46,10 +46,10 @@ uint8_t scanner_is_at_end(ScannerState* state) {
 
 ScannerToken scanner_create_token(ScannerState* state, TokenType tokenType, size_t size) {
 	ScannerToken tok = {
-		tokenType,
-		state->cur - size,
-		size,
-		state->curLine
+		.type = tokenType,
+		.line = state->curLine,
+		.posInSrc = state->cur - size,
+		.numChars = size,
 	};
 	return tok;
 }
@@ -263,6 +263,7 @@ void scanner_dump_print_tokens(ScannerState* state) {
 }
 
 void scanner_print_token(ScannerToken tok) {
+	printf("SCANNER\t");
 	switch (tok.type) {
 	case TOKEN_START:{
 		printf("Start of file\n");

@@ -45,6 +45,8 @@ static unsigned int internal_get_first_empty(HashTable* tbl, long hash);
 static unsigned int internal_get_pos_of_element(HashTable*, HashKeyVal, unsigned int);
 static unsigned int internal_get_pos_of_element_with_hash(HashTable*, HashKeyVal, uint32_t, long);
 static unsigned int insert_pointers_to_hashtable(HashTable*, void*, void*, unsigned int, unsigned int);
+static void* hashtable_lookup_string_ptr(HashTable* tbl, char* str, unsigned int len);
+static HashNode hashtable_lookup_string(HashTable* tbl, char* str, unsigned int len);
 //bad hash function, will replace later
 //todo
 static long hash_str(char* str, unsigned int len) {
@@ -53,6 +55,7 @@ static long hash_str(char* str, unsigned int len) {
 		hash <<= 7;
 		hash += (str[i]*13);
 	}
+	//printf("%.*s - %ld\n", len, str, hash);
 	return hash;
 }
 
@@ -130,9 +133,9 @@ static unsigned int internal_insert_into_hashtable(HashTable* tbl, HashKeyVal ke
 		.val = val,
 		.valSize = valSize,
 		.valType = valType,
+		.isFull = 1,
 	};
 	tbl->nodes[firstSlot] = t;
-	tbl->numNodes++;
 	if (++(tbl->numNodes) > tbl->maxNodes * 0.6) {
 		resize_hashtable(tbl, tbl->maxNodes * 1.5);
 	}
@@ -170,4 +173,19 @@ static unsigned int insert_pointers_to_hashtable(HashTable* tbl, void* key, void
 	HashKeyVal k = { .asPtr = key };
 	HashKeyVal v = { .asPtr = val };
 	return internal_insert_into_hashtable(tbl, k, v, keySize, valSize, TYPE_POINTER, TYPE_POINTER);
+}
+
+static HashNode hashtable_lookup_string(HashTable* tbl, char* str, unsigned int len) {
+	HashKeyVal ptr = { .asPtr = str };
+	unsigned int pos = internal_get_pos_of_element(tbl, ptr, len);
+	return tbl->nodes[pos];
+}
+
+static void* hashtable_lookup_string_ptr(HashTable* tbl, char* str, unsigned int len) {
+	HashKeyVal ptr = { .asPtr = str };
+	unsigned int pos = internal_get_pos_of_element(tbl, ptr, len);
+	if (pos == UINT32_MAX) {
+		return NULL;
+	}
+	return (tbl->nodes)[pos].val.asPtr;
 }
