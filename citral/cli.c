@@ -97,6 +97,7 @@ void repl() {
 				buf[inc] = toInsert;
 				inc++;
 			}
+			free(strings[i]);
 		}
 		buf[inc] = '\0';
 		load_source(buf, 1);
