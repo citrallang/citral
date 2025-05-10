@@ -115,6 +115,15 @@ void parser_initiate_keyword_list() {
 	started = 1;
 	parser_add_str("for", AST_FOR);
 	parser_add_str("foreach", AST_FOREACH);
+	parser_add_str("local", AST_LOCALDECL);
+	parser_add_str("global", AST_GLOBALDECL);
+	parser_add_str("import", AST_IMPORT);
+	parser_add_str("while", AST_WHILE);
+	parser_add_str("return", AST_RETURN);
+	parser_add_str("switch", AST_SWITCH);
+	parser_add_str("case", AST_CASE);
+	parser_add_str("else", AST_ELSE);
+	parser_add_str("elseif", AST_ELSEIF);
 }
 
 AstType parser_what_is_identifier(char* identifier, int len) {
