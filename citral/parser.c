@@ -71,6 +71,7 @@ void parser_evaluate(ParserState* state) {
 				break;
 			}
 			case AST_FOR: {
+				parser_start_for(state);
 				break;
 			}
 			default:{}
@@ -107,6 +108,15 @@ void parser_add_str(char* literal, AstType type) {
 	};
 	parser_add_keyword_to_list(word);
 }
+
+AstType parser_get_next_identifier(ParserState* state) {
+	ScannerToken nextToken = parser_advance(state);
+	if (nextToken.type != TOKEN_IDENTIFIER) {
+		return AST_NOP;
+	}
+	return parser_what_is_identifier(nextToken.posInSrc, nextToken.numChars);
+}
+
 int started = 0;
 void parser_initiate_keyword_list() {
 	if (started) {
@@ -173,3 +183,35 @@ void parser_cleanup(ParserState* state) {
 	free(state->program);
 }
 
+//0: failure
+uint8_t parser_expect_tok(ParserState* state, TokenType tok) {
+	if (parser_advance(state).type != tok) {
+		return 0;
+	}
+	return 1;
+}
+
+void parser_start_for(ParserState* state) {
+	if (parser_expect_tok(state, TOKEN_OPENPAREN)) {
+		if (parser_get_next_identifier(state) == AST_LOCALDECL) {
+			if (parser_get_next_identifier(state) == AST_IDENTIFIER) {
+				if (parser_expect_tok(state, TOKEN_EQ)) {
+					//TODO: PARSE EXPRESSION HERE
+				}
+				else {
+					parser_error(state, "Expected '=' after 'for (local IDENTIFIER '");
+				}
+			}
+			else {
+				parser_error(state, "Expected identifier after 'for (local '");
+			}
+		}
+		else 
+			if (!parser_expect_tok(state, TOKEN_SEMICOLON))
+				parser_error(state, "Expected 'local' or ';' after 'for ('");
+
+	}
+	else {
+		parser_error(state, "Expected '(' after 'for'");
+	};
+}

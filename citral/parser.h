@@ -83,3 +83,7 @@ ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
 void parser_initiate_keyword_list();
 void parser_cleanup(ParserState* state);
+void parser_start_for(ParserState* state);
+uint8_t parser_expect_tok(ParserState* state, TokenType tok);
+uint8_t parser_expect_tok_self_handle(ParserState* state, TokenType tok);
+AstType parser_get_next_identifier(ParserState* state);

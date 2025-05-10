@@ -2,8 +2,10 @@
 This conforms to the EBNF table that I saw on wikipedia :)
 This is not used to generate a parser/scanner, simply for demonstrating the syntax to myself and others.
 As such, it would probably contain several shift/reduce & reduce/reduce conflicts.
+Precedence is also not described here.
 I'm also not shying away from things like left recursion that would screw up certain parser generators.
 This focuses on readability over some shit like LALR(1)-ability.
+We also assume whitespace is ignored for the most part.
 *)
 
 
@@ -20,3 +22,9 @@ LETTER = "A" | "B" | "C" | "D" | "E" | "F" | "G"
 IDENTIFIER_NONSTART_CHARACTERS = "_" | LETTER | DIGIT
 IDENTIFIER_START_CHARACTER = "_" | LETTER
 IDENTIFIER = IDENTIFIER_START_CHARACTER , {IDENTIFIER_NONSTART_CHARACTERS}
+INTEGER = DIGIT , {DIGIT}
+FLOAT = INTEGER , '.' , INTEGER
+NUMBER = INTEGER | FLOAT
+CHARACTER = "'" ?all characters? "'"
+STRING = '"' {?all characters?} '"'
+LITERAL = STRING | CHARACTER | NUMBER | IDENTIFIER
