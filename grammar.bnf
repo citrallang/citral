@@ -1,0 +1,22 @@
+(* 
+This conforms to the EBNF table that I saw on wikipedia :)
+This is not used to generate a parser/scanner, simply for demonstrating the syntax to myself and others.
+As such, it would probably contain several shift/reduce & reduce/reduce conflicts.
+I'm also not shying away from things like left recursion that would screw up certain parser generators.
+This focuses on readability over some shit like LALR(1)-ability.
+*)
+
+
+DIGIT_EXCEPT_ZERO = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+DIGIT = '0' | DIGIT_EXCEPT_ZERO;
+LETTER = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+       | "c" | "d" | "e" | "f" | "g" | "h" | "i"
+       | "j" | "k" | "l" | "m" | "n" | "o" | "p"
+       | "q" | "r" | "s" | "t" | "u" | "v" | "w"
+       | "x" | "y" | "z" ;
+IDENTIFIER_NONSTART_CHARACTERS = "_" | LETTER | DIGIT
+IDENTIFIER_START_CHARACTER = "_" | LETTER
+IDENTIFIER = IDENTIFIER_START_CHARACTER , {IDENTIFIER_NONSTART_CHARACTERS}
