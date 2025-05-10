@@ -106,11 +106,8 @@ void repl() {
 }
 
 void tests() {
-	load_source("\
-main() {\
-return 1\
-}", 0);
-	load_source("main(){int a = 3*5 print(a) return a}", 0);
+	load_source("main() {return 1}", 0);
+	load_source("main(){local a = 3*5 local double b = a local c = (int)b a = 13 print(a) return a}", 0);
 }
 
 int main() {
