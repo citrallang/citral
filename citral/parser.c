@@ -323,7 +323,12 @@ void parser_decl_pass(ParserState* state) {
 				ScannerToken type = {
 					.type = TOKEN_NOTHING
 				};
-				parser_decl(state, type, tok);
+				if (parser_expect_tok(state, TOKEN_OPENPAREN))
+					parser_decl(state, type, tok);
+				else {
+					parser_error(state, "No open parentheses to start function.");
+					goto pdeclpasscontinue;
+				}
 				break;
 			}
 			default: {
@@ -335,7 +340,12 @@ void parser_decl_pass(ParserState* state) {
 				if (!parser_is_legitimate_identifier(state, name)) {
 					parser_error(state, "Illegitimate identifier.");
 				}
-				parser_decl(state, tok, name);
+				if (parser_expect_tok(state, TOKEN_OPENPAREN))
+					parser_decl(state, tok, name);
+				else {
+					parser_error(state, "No open parentheses to start function.");
+					goto pdeclpasscontinue;
+				}
 			}
 			}
 			break;
@@ -434,7 +444,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 			break;
 		}
 		default: {
-			parser_error(state, UNEXPECTED_TOKEN[type.type]);
+			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
 			return;
 		}
 		}
@@ -456,7 +466,12 @@ void parser_print_declarations() {
 		if (node != NULL) {
 			printf("Function %.*s has arguments ", node->identLen, node->identifier);
 			for (int k = 0; k < node->nargs-1; k++) {
-				printf("%.*s, ", node->args[k].nameLen, node->args[k].name);
+				if (node->args[k].name == NULL) {
+					printf("inferred, ");
+				}
+				else {
+					printf("%.*s, ", node->args[k].nameLen, node->args[k].name);
+				}
 			}
 			if (node->nargs - 1 >= 0)
 				printf("and %.*s.", node->args[node->nargs - 1].nameLen, node->args[node->nargs - 1].name);
