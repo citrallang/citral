@@ -62,6 +62,11 @@ typedef struct ParserState {
 	AstNode** program;
 	size_t programSize;
 	size_t programCapacity;
+
+	struct ParserFunctionDeclaration* funcs;
+	int numFuncs;
+	int maxFuncs;
+
 	unsigned int hadError : 1;
 } ParserState;
 
@@ -104,7 +109,9 @@ typedef enum ParserTypesE {
 	PTYPE_USERCLASS,
 	PTYPE_FUNCTION,
 
-	PTYPE_NOTHING, //error type
+	PTYPE_VOID, //normal void
+
+	PTYPE_NOTHING, //error/empty type
 } ParserTypesE;
 
 typedef struct ParserType {
@@ -129,6 +136,7 @@ typedef struct ParserBigType {
 typedef struct ParserFunctionDeclaration {
 	ParserType* args;
 	int nargs;
+	int maxArgs;
 	char* identifier;
 	int identLen;
 	ParserType retType;
@@ -141,6 +149,7 @@ ParserState* parser_evaluate_scanner(ScannerState* scState);
 void parser_evaluate(ParserState* state);
 void parser_evaluate_ast_node(ParserState* state, AstNode* node);
 void parser_error(ParserState* state, char* msg);
+void parser_warn(ParserState* state, char* msg);
 AstNode parser_scan_token(ParserState* state);
 ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
@@ -157,8 +166,9 @@ void parser_add_full_type(ParserType type);
 void parser_add_type(char* literal, ParserTypesE etype);
 void parser_import(ParserState* state);
 ParserType parser_what_is_type(char* typeName, int len);
-void parser_add_function(ParserFunctionDeclaration func);
-
+void parser_declare_function(ParserFunctionDeclaration func);
+uint8_t parser_is_legitimate_identifier(ParserState* state, ScannerToken tok);
+void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserType type);
 
 static HashTable parserFunctionTable = {
 	.usePrimitiveHasher = 0,

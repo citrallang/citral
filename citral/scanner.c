@@ -172,6 +172,9 @@ scanner_start_of_next_token:
 	case ';': {
 		return scanner_create_token(state, TOKEN_SEMICOLON, 1);
 	}
+	case ',': {
+		return scanner_create_token(state, TOKEN_COMMA, 1);
+	}
 	case '!': {
 		if (scanner_match(state, '=')) {
 			return scanner_create_token(state, TOKEN_BANGEQ, 2);

@@ -48,6 +48,36 @@ void parser_error(ParserState* state, char* msg) {
 
 }
 
+void parser_warn(ParserState* state, char* msg) {
+	if (state->hadError) {
+		return; //later we can start resetting at statement borders or whatever
+	}
+	char* start = state->encompassingScanner->cur - 1;
+	int distanceFromStart = 1;
+	for (;;) {
+		start--;
+		if (start < state->encompassingScanner->buf || *start == '\n') {
+			start++;
+			break;
+		}
+		distanceFromStart++;
+	}
+	char* end = state->encompassingScanner->cur - 1;
+	for (;;) {
+		end++;
+		if (end > state->encompassingScanner->buf + state->encompassingScanner->bufCapacity
+			|| *end == '\n')
+		{
+			end--;
+			break;
+		}
+		distanceFromStart++;
+	}
+
+	fprintf(stdout, "Warning at line %d: \"%.*s\". Message: %s\n", state->encompassingScanner->curLine,
+		distanceFromStart, start, msg);
+}
+
 void parser_evaluate(ParserState* state) {
 	parser_initialize();
 	ScannerToken tok;
@@ -171,7 +201,7 @@ void parser_initialize() {
 	parser_add_type("u64", PTYPE_U64);
 	parser_add_type("char", PTYPE_I8);
 	parser_add_type("uchar", PTYPE_U8);
-
+	parser_add_type("void", PTYPE_VOID);
 
 	parserFunctionTable.nodes = xmalloc(sizeof(HashNode) * 8);
 	parserFunctionTable.maxNodes = 8;
@@ -274,7 +304,20 @@ AstNode* parser_expression(ParserState* state) {
 }
 
 void parser_decl_pass(ParserState* state) {
-
+	for (;;) {
+		ScannerToken tok = parser_advance(state);
+		switch (tok.type) {
+		case TOKEN_IDENTIFIER: {
+			AstType atype = parser_what_is_identifier(tok.posInSrc, tok.numChars);
+			switch (atype) {
+			case AST_NOP: {
+				ParserType ptype = parser_what_is_type(tok.posInSrc, tok.numChars);
+				
+			}
+			}
+		}
+		}
+	}
 }
 
 //precon: The "import" token has been consumed
@@ -287,8 +330,27 @@ void parser_import(ParserState* state) {
 	}
 }
 
+//0: illegitimate
+uint8_t parser_is_legitimate_identifier(ParserState* state, ScannerToken tok) {
+	AstType type = parser_what_is_identifier(tok.posInSrc, tok.numChars);
+	if (type != AST_IDENTIFIER) {
+		return 0;
+	}
+	ParserTypesE etype = parser_what_is_type(tok.posInSrc, tok.numChars).type;
+	if (etype != PTYPE_NOTHING) {
+		return 0;
+	}
+	return 1;
+}
 
-//precon: the type and name have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
+void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserType type) {
+	if (++func->nargs > func->maxArgs) {
+		func->args = xrealloc(func->args, sizeof(ParserType) * func->maxArgs * 2);
+	}
+	func->args[func->nargs - 1] = type;
+}
+
+//precon: the type, name, and opening parentheses have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
 void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName) {
 	ParserType type;
 	if (tokType.type == TOKEN_NOTHING) {
@@ -302,7 +364,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 		}
 	}
 	AstType ident = parser_what_is_identifier(tokName.posInSrc, tokName.numChars);
-	if (ident != TOKEN_IDENTIFIER) {
+	if (ident != AST_IDENTIFIER) {
 		parser_error(state, "Illegal function name");
 		return;
 	}
@@ -310,10 +372,45 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 		.identifier = tokName.posInSrc,
 		.identLen = tokName.numChars,
 		.retType = type,
+		.args = xmalloc(sizeof(ParserType) * 4),
 	};
+	for (;;) {
+		ScannerToken tok = parser_advance(state);
+		switch (tok.type) {
+		case TOKEN_CLOSEPAREN: {
+			goto parser_decl_finished;
+		}
+		case TOKEN_IDENTIFIER: {
+			ParserType type = parser_what_is_type(tok.posInSrc, tok.numChars);
+			
+			if (type.type != TOKEN_NOTHING) {
+				ScannerToken tok = parser_advance(state);
+				if (parser_is_legitimate_identifier(state, tok)) {
+					if (!parser_expect_tok(state, TOKEN_COMMA)) {
+						parser_error(state, "Expected ',' after function argument.");
+						return;
+					}
+				}
+				else {
+					parser_error(state, "Illegitimate identifier as argument name. Ensure not violating any reserved types/keywords");
+					return;
+				}
+			}
+			parser_push_argument_onto_function(&decl, type);
+			break;
+		}
+		default: {
+			parser_error(state, UNEXPECTED_TOKEN[type.type]);
+			return;
+		}
+		}
+	}
+parser_decl_finished:
+	parser_declare_function(decl);
+	
 }
 
-void parser_add_function(ParserFunctionDeclaration func) {
+void parser_declare_function(ParserFunctionDeclaration func) {
 	ParserFunctionDeclaration* dynamic = xmalloc(sizeof(ParserFunctionDeclaration));
 	memcpy(dynamic, &func, sizeof(ParserFunctionDeclaration));
 	insert_pointers_to_hashtable(&parserFunctionTable, dynamic->identifier, dynamic, dynamic->identLen, sizeof(ParserFunctionDeclaration));

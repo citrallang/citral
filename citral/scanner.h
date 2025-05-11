@@ -5,7 +5,7 @@
 
 
 typedef enum TokenType {
-	TOKEN_PLUS=0, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE,
+	TOKEN_PLUS=0, TOKEN_MINUS, TOKEN_STAR, TOKEN_SLASH, TOKEN_PERCENT, TOKEN_CARET, TOKEN_TILDE, TOKEN_COMMA,
 	TOKEN_PLUSEQ, TOKEN_MINUSEQ, TOKEN_STAREQ, TOKEN_SLASHEQ, TOKEN_PERCENTEQ, TOKEN_CARETEQ, TOKEN_PLUSPLUS, TOKEN_MINUSMINUS,
 
 	TOKEN_EQ, TOKEN_EQEQ, TOKEN_BANG, TOKEN_BANGEQ, TOKEN_AMPAMP, TOKEN_BARBAR,
@@ -18,21 +18,21 @@ typedef enum TokenType {
 } TokenType;
 
 static const char* TOKEN_NAMES[] = {
-	"+", "-", "*", "/", "%", "^", "~", 
+	"+", "-", "*", "/", "%", "^", "~", ",",
 	"+=", "-=", "*=", "/=", "%=", "^=", "++", "--",
 
 	"=", "==", "!", "!=", "&&", "||",
 
-	"(", ")", "[", "]", "{", "}", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR",
+	"(", ")", "[", "]", "{", "}", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR", "NOTHING",
 };
 
 static const char* UNEXPECTED_TOKEN[] = {
-	"Unexpected token: '+'", "Unexpected token: '-'", "Unexpected token: '*'", "Unexpected token: '/'", "Unexpected token: '%'", "Unexpected token: '^'", "Unexpected token: '~'", 
+	"Unexpected token: '+'", "Unexpected token: '-'", "Unexpected token: '*'", "Unexpected token: '/'", "Unexpected token: '%'", "Unexpected token: '^'", "Unexpected token: '~'", "Unexpected token: ','",
 	"Unexpected token: '+='", "Unexpected token: '-='", "Unexpected token: '*='", "Unexpected token: '/='", "Unexpected token: '%='", "Unexpected token: '^='", "Unexpected token: '++'", "Unexpected token: '--'", 
 	"Unexpected token: '='", "Unexpected token: '=='", "Unexpected token: '!'", "Unexpected token: '!='", "Unexpected token: '&&'", "Unexpected token: '||'", 
 	"Unexpected token: '('", "Unexpected token: ')'", "Unexpected token: '['", "Unexpected token: ']'", "Unexpected token: '{'", "Unexpected token: '}'", 
 	"Unexpected token: 'STRING'", "Unexpected token: 'INT'", "Unexpected token: 'FLOAT'", "Unexpected token: 'IDENTIFIER'", "Unexpected token: 'CHAR'", 
-	"Unexpected token: 'END OF FILE'", "Unexpected token: 'START OF FILE'", "Unexpected token: 'ERROR'",
+	"Unexpected token: 'END OF FILE'", "Unexpected token: 'START OF FILE'", "Unexpected token: 'ERROR'", "Unexpected token: 'NOTHING'"
 };
 
 typedef struct ScannerToken {
