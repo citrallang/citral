@@ -103,9 +103,12 @@ In the case of a struct, class, or function "name" instead points to a ParserBig
 typedef enum ParserTypesE {
 	PTYPE_POINTER, PTYPE_U8, PTYPE_U16, PTYPE_U32, PTYPE_U64, PTYPE_I8, PTYPE_I16, PTYPE_I32, PTYPE_I64, PTYPE_FLOAT, PTYPE_DOUBLE,
 
+
 	PTYPE_USERSTRUCT,
 	PTYPE_USERCLASS,
 	PTYPE_FUNCTION,
+
+	PTYPE_NOTHING, //error type
 } ParserTypesE;
 
 typedef struct ParserType {
@@ -149,6 +152,13 @@ void parser_definition_pass(ParserState* state);
 void parser_add_full_type(ParserType type);
 void parser_add_type(char* literal, ParserTypesE etype);
 void parser_import(ParserState* state);
+ParserType parser_what_is_type(char* typeName, int len);
+
+
+
+
+
+
 static HashTable parserTypeTable = {
 	.usePrimitiveHasher = 0,
 };

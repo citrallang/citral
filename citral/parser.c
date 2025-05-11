@@ -180,6 +180,17 @@ AstType parser_what_is_identifier(char* identifier, int len) {
 	return kw->whatAreYou;
 }
 
+ParserType parser_what_is_type(char* typeName, int len) {
+	ParserType* type = hashtable_lookup_string_ptr(&parserTypeTable, typeName, len);
+	if (type == NULL) {
+		ParserType ret = {
+			.type = PTYPE_NOTHING,
+		};
+		return ret;
+	}
+	return *type;
+}
+
 ScannerToken parser_advance(ParserState* state) {
 	return scanner_next_token(state->encompassingScanner);
 }
@@ -273,9 +284,21 @@ void parser_import(ParserState* state) {
 
 
 //precon: the type and name have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
-void parser_decl(ParserState* state, ScannerToken type, ScannerToken name) {
-
-	if (type.type == TOKEN_NOTHING) {
-
+void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName) {
+	ParserType type;
+	if (tokType.type == TOKEN_NOTHING) {
+		type.type = PTYPE_NOTHING;
+	}
+	else {
+		type = parser_what_is_type(tokType.posInSrc, tokType.numChars);
+		if (type.type == TOKEN_NOTHING) {
+			parser_error(state, "Given return type is not actually a type");
+			return;
+		}
+	}
+	AstType ident = parser_what_is_identifier(tokName.posInSrc, tokName.numChars);
+	if (ident != TOKEN_IDENTIFIER) {
+		parser_error(state, "Illegal function name");
+		return;
 	}
 }
