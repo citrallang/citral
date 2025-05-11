@@ -159,7 +159,7 @@ static void resize_hashtable(HashTable* tbl, unsigned int newSize) {
 		}
 	}
 	tbl->nodes = new_nodes;
-	tbl->maxNodes = new_amt;
+	tbl->maxNodes = new_amt / sizeof(HashNode); //this gets optimized away probably
 }
 
 static HashKeyVal internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize) {

@@ -169,7 +169,8 @@ ParserType parser_what_is_type(char* typeName, int len);
 void parser_declare_function(ParserFunctionDeclaration func);
 uint8_t parser_is_legitimate_identifier(ParserState* state, ScannerToken tok);
 void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserType type);
-
+void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName);
+void parser_print_declarations();
 static HashTable parserFunctionTable = {
 	.usePrimitiveHasher = 0,
 };

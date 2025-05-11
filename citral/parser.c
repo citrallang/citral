@@ -82,6 +82,9 @@ void parser_evaluate(ParserState* state) {
 	parser_initialize();
 	ScannerToken tok;
 	parser_decl_pass(state);
+#ifdef PARSER_DEBUG
+	parser_print_declarations();
+#endif
 //	ScannerToken tok;
 //	for (;;) {
 //		tok = parser_advance(state);
@@ -169,6 +172,7 @@ void parser_initialize() {
 	if (started) {
 		return;
 	}
+	printf("initializing\n");
 	started = 1;
 	parser_add_str("for", AST_FOR);
 	parser_add_str("foreach", AST_FOREACH);
@@ -309,14 +313,38 @@ void parser_decl_pass(ParserState* state) {
 		switch (tok.type) {
 		case TOKEN_IDENTIFIER: {
 			AstType atype = parser_what_is_identifier(tok.posInSrc, tok.numChars);
+			ParserType ptype;
 			switch (atype) {
-			case AST_NOP: {
-				ParserType ptype = parser_what_is_type(tok.posInSrc, tok.numChars);
-				
+			case AST_IDENTIFIER: {
+				if (!parser_is_legitimate_identifier(state, tok)) {
+					parser_error(state, "Illegitimate identifier.");
+					goto pdeclpasscontinue;
+				}
+				ScannerToken type = {
+					.type = TOKEN_NOTHING
+				};
+				parser_decl(state, type, tok);
+				break;
+			}
+			default: {
+				ScannerToken name = parser_advance(state);
+				if (name.type != TOKEN_IDENTIFIER) {
+					parser_error(state, UNEXPECTED_TOKEN[name.type]);
+					goto pdeclpasscontinue;
+				}
+				if (!parser_is_legitimate_identifier(state, name)) {
+					parser_error(state, "Illegitimate identifier.");
+				}
+				parser_decl(state, tok, name);
 			}
 			}
+			break;
+		}
+		case TOKEN_EOF: {
+			return;
 		}
 		}
+	pdeclpasscontinue:;
 	}
 }
 
@@ -373,6 +401,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 		.identLen = tokName.numChars,
 		.retType = type,
 		.args = xmalloc(sizeof(ParserType) * 4),
+		.maxArgs = 4,
 	};
 	for (;;) {
 		ScannerToken tok = parser_advance(state);
@@ -386,7 +415,12 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 			if (type.type != TOKEN_NOTHING) {
 				ScannerToken tok = parser_advance(state);
 				if (parser_is_legitimate_identifier(state, tok)) {
-					if (!parser_expect_tok(state, TOKEN_COMMA)) {
+					ScannerToken commaOrClose = parser_advance(state);
+					if (commaOrClose.type == TOKEN_CLOSEPAREN) {
+						parser_push_argument_onto_function(&decl, type);
+						goto parser_decl_finished;
+					}
+					if (commaOrClose.type != TOKEN_COMMA) {
 						parser_error(state, "Expected ',' after function argument.");
 						return;
 					}
@@ -414,4 +448,21 @@ void parser_declare_function(ParserFunctionDeclaration func) {
 	ParserFunctionDeclaration* dynamic = xmalloc(sizeof(ParserFunctionDeclaration));
 	memcpy(dynamic, &func, sizeof(ParserFunctionDeclaration));
 	insert_pointers_to_hashtable(&parserFunctionTable, dynamic->identifier, dynamic, dynamic->identLen, sizeof(ParserFunctionDeclaration));
+}
+
+void parser_print_declarations() {
+	for (int i = 0; i < parserFunctionTable.maxNodes; i++) {
+		ParserFunctionDeclaration* node = parserFunctionTable.nodes[i].val.asPtr;
+		if (node != NULL) {
+			printf("Function %.*s has arguments ", node->identLen, node->identifier);
+			for (int k = 0; k < node->nargs-1; k++) {
+				printf("%.*s, ", node->args[k].nameLen, node->args[k].name);
+			}
+			if (node->nargs - 1 >= 0)
+				printf("and %.*s.", node->args[node->nargs - 1].nameLen, node->args[node->nargs - 1].name);
+			else
+				printf("none.");
+			printf("\n");
+		}
+	}
 }
