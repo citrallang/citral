@@ -111,8 +111,19 @@ void parser_add_str(char* literal, AstType type) {
 	parser_add_keyword_to_list(word);
 }
 
-void parser_add_type(char* literal, ParserType type) {
+void parser_add_full_type(ParserType type) {
+	ParserType* dynamic = xmalloc(sizeof(ParserType));
+	memcpy(dynamic, &type, sizeof(ParserType));
+	insert_pointers_to_hashtable(&parserTypeTable, dynamic->name, dynamic, dynamic->nameLen, sizeof(ParserType));
+}
 
+void parser_add_type(char* literal, ParserTypesE etype) {
+	ParserType type = {
+		.type = etype,
+		.name = literal,
+		.nameLen = strlen(literal)
+	};
+	parser_add_full_type(type);
 }
 
 AstType parser_get_next_identifier(ParserState* state) {
@@ -145,6 +156,21 @@ void parser_initialize() {
 	parserTypeTable.maxNodes = 16;
 	parserTypeTable.numNodes = 0;
 	
+
+	parser_add_type("i8", PTYPE_I8);
+	parser_add_type("i16", PTYPE_I16);
+	parser_add_type("i32", PTYPE_I32);
+	parser_add_type("i64", PTYPE_I64);
+	parser_add_type("float", PTYPE_FLOAT);
+	parser_add_type("f32", PTYPE_FLOAT);
+	parser_add_type("double", PTYPE_DOUBLE);
+	parser_add_type("f64", PTYPE_DOUBLE);
+	parser_add_type("u8", PTYPE_U8);
+	parser_add_type("u16", PTYPE_U16);
+	parser_add_type("u32", PTYPE_U32);
+	parser_add_type("u64", PTYPE_U64);
+	parser_add_type("char", PTYPE_I8);
+	parser_add_type("uchar", PTYPE_U8);
 }
 
 AstType parser_what_is_identifier(char* identifier, int len) {

@@ -117,7 +117,7 @@ typedef struct ParserType {
 
 typedef struct ParserBigTypeSegment {
 	ParserType type;
-	int len;
+	int size; //if type is a struct, this can be bigger than 8
 } ParserBigTypeSegment;
 
 typedef struct ParserBigType {
@@ -146,7 +146,8 @@ AstNode* parser_expression(ParserState* state);
 void parser_decl_pass(ParserState* state);
 void parser_import_pass(ParserState* state);
 void parser_definition_pass(ParserState* state);
-void parser_add_type(char* literal, ParserType type);
+void parser_add_full_type(ParserType type);
+void parser_add_type(char* literal, ParserTypesE etype);
 void parser_import(ParserState* state);
 static HashTable parserTypeTable = {
 	.usePrimitiveHasher = 0,
