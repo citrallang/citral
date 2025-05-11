@@ -171,6 +171,11 @@ void parser_initialize() {
 	parser_add_type("u64", PTYPE_U64);
 	parser_add_type("char", PTYPE_I8);
 	parser_add_type("uchar", PTYPE_U8);
+
+
+	parserFunctionTable.nodes = xmalloc(sizeof(HashNode) * 8);
+	parserFunctionTable.maxNodes = 8;
+	parserFunctionTable.numNodes = 0;
 }
 
 AstType parser_what_is_identifier(char* identifier, int len) {
@@ -301,4 +306,15 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 		parser_error(state, "Illegal function name");
 		return;
 	}
+	ParserFunctionDeclaration decl = {
+		.identifier = tokName.posInSrc,
+		.identLen = tokName.numChars,
+		.retType = type,
+	};
+}
+
+void parser_add_function(ParserFunctionDeclaration func) {
+	ParserFunctionDeclaration* dynamic = xmalloc(sizeof(ParserFunctionDeclaration));
+	memcpy(dynamic, &func, sizeof(ParserFunctionDeclaration));
+	insert_pointers_to_hashtable(&parserFunctionTable, dynamic->identifier, dynamic, dynamic->identLen, sizeof(ParserFunctionDeclaration));
 }

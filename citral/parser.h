@@ -91,10 +91,6 @@ typedef struct ParserPrimitive {
 	ParserPrimitiveTypes literal;
 } ParserPrimitive;
 
-typedef struct ParserFunctionDeclaration {
-	void* a;
-} ParserFunctionDeclaration;
-
 /*
 Primitives are stored directly inside ParserType.
 In the case of a struct, class, or function "name" instead points to a ParserBigType.
@@ -130,6 +126,14 @@ typedef struct ParserBigType {
 
 } ParserBigType;
 
+typedef struct ParserFunctionDeclaration {
+	ParserType* args;
+	int nargs;
+	char* identifier;
+	int identLen;
+	ParserType retType;
+} ParserFunctionDeclaration;
+
 AstNode parser_create_node(AstType type);
 AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal);
 ParserState* parser_create_state(ScannerState* encompassing);
@@ -153,10 +157,12 @@ void parser_add_full_type(ParserType type);
 void parser_add_type(char* literal, ParserTypesE etype);
 void parser_import(ParserState* state);
 ParserType parser_what_is_type(char* typeName, int len);
+void parser_add_function(ParserFunctionDeclaration func);
 
 
-
-
+static HashTable parserFunctionTable = {
+	.usePrimitiveHasher = 0,
+};
 
 
 static HashTable parserTypeTable = {
