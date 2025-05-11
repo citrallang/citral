@@ -2,7 +2,7 @@
 #include "scanner.h"
 #include "allocator.h"
 #include <stdint.h>
-
+#include "hashmap.h"
 typedef enum AstConstant {
 	CONST_FLOAT, CONST_DOUBLE, CONST_UI8,  CONST_I8, CONST_UI16, CONST_I16, CONST_UI32, CONST_I32, CONST_UI64, CONST_I64, CONST_PTR, CONST_CHAR, CONST_STR,
 } AstConstant;
@@ -96,9 +96,10 @@ typedef struct ParserFunctionDeclaration {
 } ParserFunctionDeclaration;
 
 typedef enum ParserTypesE {
-	TYPE_POINTER, TYPE_U8, TYPE_U16, TYPE_U32, TYPE_U64, TYPE_I8, TYPE_I16, TYPE_I32, TYPE_I64, TYPE_FLOAT, TYPE_DOUBLE,
-	TYPE_USERSTRUCT,
-	TYPE_USERCLASS,
+	PTYPE_POINTER, PTYPE_U8, PTYPE_U16, PTYPE_U32, PTYPE_U64, PTYPE_I8, PTYPE_I16, PTYPE_I32, PTYPE_I64, PTYPE_FLOAT, PTYPE_DOUBLE,
+	PTYPE_USERSTRUCT,
+	PTYPE_USERCLASS,
+	PTYPE_FUNCTION,
 } ParserTypesE;
 
 typedef struct ParserType {
@@ -130,7 +131,7 @@ void parser_error(ParserState* state, char* msg);
 AstNode parser_scan_token(ParserState* state);
 ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
-void parser_initiate_keyword_list();
+void parser_initialize();
 void parser_cleanup(ParserState* state);
 void parser_start_for(ParserState* state);
 uint8_t parser_expect_tok(ParserState* state, TokenType tok);
@@ -139,3 +140,8 @@ AstNode* parser_expression(ParserState* state);
 void parser_decl_pass(ParserState* state);
 void parser_import_pass(ParserState* state);
 void parser_definition_pass(ParserState* state);
+void parser_add_type(char* literal, ParserType type);
+
+static HashTable parserTypeTable = {
+	.usePrimitiveHasher = 0,
+};

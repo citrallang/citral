@@ -49,7 +49,7 @@ void parser_error(ParserState* state, char* msg) {
 }
 
 void parser_evaluate(ParserState* state) {
-	parser_initiate_keyword_list();
+	parser_initialize();
 	ScannerToken tok;
 	parser_decl_pass(state);
 //	ScannerToken tok;
@@ -111,6 +111,10 @@ void parser_add_str(char* literal, AstType type) {
 	parser_add_keyword_to_list(word);
 }
 
+void parser_add_type(char* literal, ParserType type) {
+
+}
+
 AstType parser_get_next_identifier(ParserState* state) {
 	ScannerToken nextToken = parser_advance(state);
 	if (nextToken.type != TOKEN_IDENTIFIER) {
@@ -120,7 +124,7 @@ AstType parser_get_next_identifier(ParserState* state) {
 }
 
 int started = 0;
-void parser_initiate_keyword_list() {
+void parser_initialize() {
 	if (started) {
 		return;
 	}
@@ -136,6 +140,11 @@ void parser_initiate_keyword_list() {
 	parser_add_str("case", AST_CASE);
 	parser_add_str("else", AST_ELSE);
 	parser_add_str("elseif", AST_ELSEIF);
+
+	parserTypeTable.nodes = xmalloc(sizeof(HashNode) * 16);
+	parserTypeTable.maxNodes = 16;
+	parserTypeTable.numNodes = 0;
+	
 }
 
 AstType parser_what_is_identifier(char* identifier, int len) {
