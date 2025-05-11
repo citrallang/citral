@@ -141,7 +141,7 @@ void parser_decl_pass(ParserState* state);
 void parser_import_pass(ParserState* state);
 void parser_definition_pass(ParserState* state);
 void parser_add_type(char* literal, ParserType type);
-
+void parser_import(ParserState* state);
 static HashTable parserTypeTable = {
 	.usePrimitiveHasher = 0,
 };

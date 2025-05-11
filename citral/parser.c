@@ -234,3 +234,19 @@ AstNode* parser_expression(ParserState* state) {
 void parser_decl_pass(ParserState* state) {
 
 }
+
+//precon: The "import" token has been consumed
+void parser_import(ParserState* state) {
+	if (parser_expect_tok(state, TOKEN_STRING)) {
+		//todo: parse the filename and import it
+	}
+	else {
+		parser_error(state, "Expected \"<FILE>\" near 'import'");
+	}
+}
+
+
+//precon: the first token (return type, or if omitted the name of the function) has been consumed and is "first"
+void parser_decl(ParserState* state, ScannerToken first) {
+	
+}
