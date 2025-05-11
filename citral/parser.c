@@ -246,7 +246,10 @@ void parser_import(ParserState* state) {
 }
 
 
-//precon: the first token (return type, or if omitted the name of the function) has been consumed and is "first"
-void parser_decl(ParserState* state, ScannerToken first) {
-	
+//precon: the type and name have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
+void parser_decl(ParserState* state, ScannerToken type, ScannerToken name) {
+
+	if (type.type == TOKEN_NOTHING) {
+
+	}
 }

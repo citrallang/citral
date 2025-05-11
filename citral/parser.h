@@ -95,8 +95,14 @@ typedef struct ParserFunctionDeclaration {
 	void* a;
 } ParserFunctionDeclaration;
 
+/*
+Primitives are stored directly inside ParserType.
+In the case of a struct, class, or function "name" instead points to a ParserBigType.
+*/
+
 typedef enum ParserTypesE {
 	PTYPE_POINTER, PTYPE_U8, PTYPE_U16, PTYPE_U32, PTYPE_U64, PTYPE_I8, PTYPE_I16, PTYPE_I32, PTYPE_I64, PTYPE_FLOAT, PTYPE_DOUBLE,
+
 	PTYPE_USERSTRUCT,
 	PTYPE_USERCLASS,
 	PTYPE_FUNCTION,
