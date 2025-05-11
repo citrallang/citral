@@ -313,9 +313,9 @@ void parser_decl_pass(ParserState* state) {
 		switch (tok.type) {
 		case TOKEN_IDENTIFIER: {
 			AstType atype = parser_what_is_identifier(tok.posInSrc, tok.numChars);
-			ParserType ptype;
-			switch (atype) {
-			case AST_IDENTIFIER: {
+			ParserType ptype = parser_what_is_type(tok.posInSrc, tok.numChars);
+			switch (ptype.type) {
+			case PTYPE_NOTHING: {
 				if (!parser_is_legitimate_identifier(state, tok)) {
 					parser_error(state, "Illegitimate identifier.");
 					goto pdeclpasscontinue;
@@ -464,19 +464,29 @@ void parser_print_declarations() {
 	for (int i = 0; i < parserFunctionTable.maxNodes; i++) {
 		ParserFunctionDeclaration* node = parserFunctionTable.nodes[i].val.asPtr;
 		if (node != NULL) {
-			printf("Function %.*s has arguments ", node->identLen, node->identifier);
-			for (int k = 0; k < node->nargs-1; k++) {
-				if (node->args[k].name == NULL) {
-					printf("inferred, ");
-				}
-				else {
-					printf("%.*s, ", node->args[k].nameLen, node->args[k].name);
-				}
+			if (node->nargs == 1) {
+				printf("Function %.*s has argument %.*s. ", node->identLen, node->identifier, node->args[0].nameLen, node->args[0].name);
 			}
-			if (node->nargs - 1 >= 0)
-				printf("and %.*s.", node->args[node->nargs - 1].nameLen, node->args[node->nargs - 1].name);
+			else if (node->nargs > 1) {
+				printf("Function %.*s has arguments ", node->identLen, node->identifier);
+				for (int k = 0; k < node->nargs - 1; k++) {
+					if (node->args[k].name == NULL) {
+						printf("inferred, ");
+					}
+					else {
+						printf("%.*s ", node->args[k].nameLen, node->args[k].name);
+					}
+				}
+				printf("and %.*s. ", node->args[node->nargs - 1].nameLen, node->args[node->nargs - 1].name);
+			}
 			else
-				printf("none.");
+				printf("Function %.*s has no arguments. ", node->identLen, node->identifier);
+			if (node->retType.type != PTYPE_NOTHING) {
+				printf("It returns a(n) %.*s.", node->retType.nameLen, node->retType.name);
+			}
+			else {
+				printf("It returns an inferred value.");
+			}
 			printf("\n");
 		}
 	}
