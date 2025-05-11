@@ -71,6 +71,18 @@ typedef struct ParserKeyword {
 	AstType whatAreYou;
 } ParserKeyword;
 
+typedef struct ParserUserType {
+	
+} ParserUserType;
+
+typedef union ParserPrimitiveTypes {
+
+} ParserPrimitiveTypes;
+
+typedef struct ParserFunctionDeclaration {
+
+} ParserFunctionDeclaration;
+
 AstNode parser_create_node(AstType type);
 AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal);
 ParserState* parser_create_state(ScannerState* encompassing);

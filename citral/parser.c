@@ -221,3 +221,7 @@ void parser_start_for(ParserState* state) {
 AstNode* parser_expression(ParserState* state) {
 	 
 }
+
+void parser_decl_pass(ParserState* state) {
+
+}
