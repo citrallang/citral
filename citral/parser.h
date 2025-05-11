@@ -71,17 +71,54 @@ typedef struct ParserKeyword {
 	AstType whatAreYou;
 } ParserKeyword;
 
-typedef struct ParserType {
-	
-} ParserType;
+
 
 typedef union ParserPrimitiveTypes {
-
+	void* asPtr;
+	uint8_t as8Bit;
+	uint16_t as16Bit;
+	uint32_t as32Bit;
+	uint64_t as64Bit;
+	int8_t as8BitS;
+	int16_t as16BitS;
+	int32_t as32BitS;
+	int64_t as64BitS;
+	float asFlt;
+	double asDbl;
 } ParserPrimitiveTypes;
 
-typedef struct ParserFunctionDeclaration {
+typedef struct ParserPrimitive {
+	ParserPrimitiveTypes literal;
+} ParserPrimitive;
 
+typedef struct ParserFunctionDeclaration {
+	void* a;
 } ParserFunctionDeclaration;
+
+typedef enum ParserTypesE {
+	TYPE_POINTER, TYPE_U8, TYPE_U16, TYPE_U32, TYPE_U64, TYPE_I8, TYPE_I16, TYPE_I32, TYPE_I64, TYPE_FLOAT, TYPE_DOUBLE,
+	TYPE_USERSTRUCT,
+	TYPE_USERCLASS,
+} ParserTypesE;
+
+typedef struct ParserType {
+	char* name;
+	int nameLen;
+	ParserTypesE type;
+} ParserType;
+
+
+typedef struct ParserBigTypeSegment {
+	ParserType type;
+	int len;
+} ParserBigTypeSegment;
+
+typedef struct ParserBigType {
+	char* name;
+	int nameLen;
+	ParserTypesE type;
+
+} ParserBigType;
 
 AstNode parser_create_node(AstType type);
 AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal);
