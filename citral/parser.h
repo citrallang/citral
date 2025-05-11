@@ -71,9 +71,9 @@ typedef struct ParserKeyword {
 	AstType whatAreYou;
 } ParserKeyword;
 
-typedef struct ParserUserType {
+typedef struct ParserType {
 	
-} ParserUserType;
+} ParserType;
 
 typedef union ParserPrimitiveTypes {
 
