@@ -51,39 +51,41 @@ void parser_error(ParserState* state, char* msg) {
 void parser_evaluate(ParserState* state) {
 	parser_initiate_keyword_list();
 	ScannerToken tok;
-	for (;;) {
-		tok = parser_advance(state);
-#ifdef SCANNER_DEBUG
-		scanner_print_token(tok);
-#endif
-		switch (tok.type) {
-		case TOKEN_EOF:
-			goto exit_parser_evaluate;
-		case TOKEN_IDENTIFIER: {
-			int chars = tok.numChars;
-			char* pos = tok.posInSrc;
-			AstType typeOfIdentifier = parser_what_is_identifier(pos, chars);
-			//if, for, break, return, variable, etc
-			switch (typeOfIdentifier)
-			{
-			case AST_IDENTIFIER: {
-				parser_error(state, "Expected statement, found identifier.");
-				break;
-			}
-			case AST_FOR: {
-				parser_start_for(state);
-				break;
-			}
-			default:{}
-			}
-			break;
-		}
-		default: {
-			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
-		}
-		}
-	}
-	exit_parser_evaluate:;
+	parser_decl_pass(state);
+//	ScannerToken tok;
+//	for (;;) {
+//		tok = parser_advance(state);
+//#ifdef SCANNER_DEBUG
+//		scanner_print_token(tok);
+//#endif
+//		switch (tok.type) {
+//		case TOKEN_EOF:
+//			goto exit_parser_evaluate;
+//		case TOKEN_IDENTIFIER: {
+//			int chars = tok.numChars;
+//			char* pos = tok.posInSrc;
+//			AstType typeOfIdentifier = parser_what_is_identifier(pos, chars);
+//			//if, for, break, return, variable, etc
+//			switch (typeOfIdentifier)
+//			{
+//			case AST_IDENTIFIER: {
+//				parser_error(state, "Expected statement, found identifier.");
+//				break;
+//			}
+//			case AST_FOR: {
+//				parser_start_for(state);
+//				break;
+//			}
+//			default:{}
+//			}
+//			break;
+//		}
+//		default: {
+//			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
+//		}
+//		}
+//	}
+//	exit_parser_evaluate:;
 }
 #define MAX_KEYWORDS 256
 HashNode keywords[MAX_KEYWORDS]; //we can increase this later if necessary
@@ -214,4 +216,8 @@ void parser_start_for(ParserState* state) {
 	else {
 		parser_error(state, "Expected '(' after 'for'");
 	};
+}
+
+AstNode* parser_expression(ParserState* state) {
+	 
 }
