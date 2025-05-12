@@ -15,6 +15,15 @@ ParserState* parser_create_state(ScannerState* encompassing) {
 ParserState* parser_evaluate_scanner(ScannerState* scState) {
 
 }
+static char* otherErrMsg;
+void parser_print_other_err() {
+	if (otherErrMsg)
+		fprintf(stderr, "%s", otherErrMsg);
+}
+
+void parser_add_error_message(char* msg) {
+	otherErrMsg = msg;
+}
 
 void parser_error(ParserState* state, char* msg) {
 	if (state->hadError) {
@@ -43,8 +52,10 @@ void parser_error(ParserState* state, char* msg) {
 		distanceFromStart++;
 	}
 
-	fprintf(stderr, "Parse error at line %d: \"%.*s\". Error message: %s\n", state->encompassingScanner->curLine,
-		distanceFromStart, start, msg);
+	fprintf(stderr, "Parse error at line %d: \"%.*s\". Error message: ", state->encompassingScanner->curLine,
+		distanceFromStart, start);
+	parser_print_other_err();
+	fprintf(stderr, "%s\n", msg);
 
 }
 
@@ -398,6 +409,10 @@ void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserT
 	func->args[func->nargs - 1] = type;
 }
 
+uint8_t parser_does_function_exist(ParserFunctionDeclaration* func) {
+
+}
+
 //precon: the type, name, and opening parentheses have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
 void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName) {
 	ParserType type;
@@ -468,7 +483,8 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 			goto parser_decl_finished;
 		}
 		default: {
-			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
+			parser_add_error_message(UNEXPECTED_TOKEN[tok.type]);
+			parser_error(state, ", Expected ',' ')' or 'IDENTIFIER'.");
 			return;
 		}
 		}

@@ -172,6 +172,9 @@ uint8_t parser_is_legitimate_identifier(ParserState* state, ScannerToken tok);
 void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserType type);
 void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName);
 void parser_print_declarations();
+void parser_print_other_err();
+void parser_add_error_message(char* msg);
+uint8_t parser_does_function_exist(ParserFunctionDeclaration* func);
 static HashTable parserFunctionTable = {
 	.usePrimitiveHasher = 0,
 };
