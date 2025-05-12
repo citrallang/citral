@@ -329,12 +329,24 @@ AstNode* parser_expression(ParserState* state) {
 }
 
 void parser_decl_pass(ParserState* state) {
+	uint8_t scopeLevel = 0;
 	for (;;) {
 		ScannerToken tok = parser_advance(state);
 		switch (tok.type) {
+		case TOKEN_OPENBRACE: {
+			scopeLevel++;
+			break;
+		}
+		case TOKEN_CLOSEBRACE: {
+			scopeLevel--;
+			break;
+		}
 		case TOKEN_IDENTIFIER: {
 			AstType atype = parser_what_is_identifier(tok.posInSrc, tok.numChars);
 			ParserType ptype = parser_what_is_type(tok.posInSrc, tok.numChars);
+			if (atype != AST_IDENTIFIER) {
+				goto pdeclpasscontinue;
+			}
 			switch (ptype.type) {
 			case PTYPE_NOTHING: {
 				if (!parser_is_legitimate_identifier(state, tok)) {
@@ -344,8 +356,12 @@ void parser_decl_pass(ParserState* state) {
 				ScannerToken type = {
 					.type = TOKEN_NOTHING
 				};
-				if (parser_expect_tok(state, TOKEN_OPENPAREN))
+				if (parser_expect_tok(state, TOKEN_OPENPAREN)) {
+					if (scopeLevel) {
+						goto pdeclpasscontinue;
+					}
 					parser_decl(state, type, tok);
+				}
 				else {
 					parser_error(state, "No open parentheses to start function.");
 					goto pdeclpasscontinue;
@@ -372,6 +388,9 @@ void parser_decl_pass(ParserState* state) {
 			break;
 		}
 		case TOKEN_EOF: {
+			if (scopeLevel) {
+				parser_error(state, "Unexpected EOF. Imbalanced {}.");
+			}
 			return;
 		}
 		}
