@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include "hashmap.h"
 #include "config.h"
+
+int parserStarted = 0;
+
 ParserState* parser_create_state(ScannerState* encompassing) {
 	ParserState* state = xmalloc(sizeof(ParserState));
 	state->encompassingScanner = encompassing;
@@ -178,13 +181,13 @@ AstType parser_get_next_identifier(ParserState* state) {
 	return parser_what_is_identifier(nextToken.posInSrc, nextToken.numChars);
 }
 
-int started = 0;
+
 void parser_initialize() {
-	if (started) {
+	if (parserStarted) {
 		return;
 	}
 	printf("initializing\n");
-	started = 1;
+	parserStarted = 1;
 	parser_add_str("for", AST_FOR);
 	parser_add_str("foreach", AST_FOREACH);
 	parser_add_str("local", AST_LOCALDECL);
@@ -288,6 +291,32 @@ void parser_cleanup(ParserState* state) {
 	for (int i = 0; i < state->programSize; i++) {
 		__parser_free_node(state->program[i]);
 	}
+	for (int i = 0; i < parserFunctionTable.maxNodes; i++) {
+		if (parserFunctionTable.nodes[i].isFull) {
+			free(parserFunctionTable.nodes[i].val.asPtr);
+			HashNode empty = { .hash = 0 };
+			parserFunctionTable.nodes[i] = empty;
+		}
+	}
+	free(parserFunctionTable.nodes);
+
+	for (int i = 0; i < parserTypeTable.maxNodes; i++) {
+		if (parserTypeTable.nodes[i].isFull) {
+			free(parserTypeTable.nodes[i].val.asPtr);
+			HashNode empty = { .hash = 0 };
+			parserTypeTable.nodes[i] = empty;
+		}
+	}
+	free(parserTypeTable.nodes);
+
+	for (int i = 0; i < parser_reserved_keywords.maxNodes; i++) {
+		if (parser_reserved_keywords.nodes[i].isFull) {
+			free(parser_reserved_keywords.nodes[i].val.asPtr);
+			HashNode empty = {.hash = 0};
+			parser_reserved_keywords.nodes[i] = empty;
+		}
+	}
+	parserStarted = 0;
 	free(state->program);
 }
 
