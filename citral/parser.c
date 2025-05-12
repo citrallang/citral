@@ -134,14 +134,7 @@ void parser_evaluate(ParserState* state) {
 //	}
 //	exit_parser_evaluate:;
 }
-#define MAX_KEYWORDS 256
-HashNode keywords[MAX_KEYWORDS]; //we can increase this later if necessary
-HashTable parser_reserved_keywords = {
-	.nodes = &keywords,
-	.maxNodes = MAX_KEYWORDS,
-	.numNodes = 0,
-	.usePrimitiveHasher = 0,
-};
+
 
 void parser_add_keyword_to_list(ParserKeyword word) {
 	ParserKeyword* dynamic = xmalloc(sizeof(ParserKeyword));
@@ -186,6 +179,9 @@ void parser_initialize() {
 	if (parserStarted) {
 		return;
 	}
+	parser_reserved_keywords.nodes = xmalloc(sizeof(HashNode) * 16);
+	parser_reserved_keywords.maxNodes = 16;
+
 	printf("initializing\n");
 	parserStarted = 1;
 	parser_add_str("for", AST_FOR);
@@ -293,12 +289,14 @@ void parser_cleanup(ParserState* state) {
 	}
 	for (int i = 0; i < parserFunctionTable.maxNodes; i++) {
 		if (parserFunctionTable.nodes[i].isFull) {
+			free(((ParserFunctionDeclaration*)((parserFunctionTable.nodes[i].val.asPtr)))->args);
 			free(parserFunctionTable.nodes[i].val.asPtr);
 			HashNode empty = { .hash = 0 };
 			parserFunctionTable.nodes[i] = empty;
 		}
 	}
 	free(parserFunctionTable.nodes);
+	
 
 	for (int i = 0; i < parserTypeTable.maxNodes; i++) {
 		if (parserTypeTable.nodes[i].isFull) {
@@ -316,6 +314,8 @@ void parser_cleanup(ParserState* state) {
 			parser_reserved_keywords.nodes[i] = empty;
 		}
 	}
+	
+	free(parser_reserved_keywords.nodes);
 	parserStarted = 0;
 	free(state->program);
 }

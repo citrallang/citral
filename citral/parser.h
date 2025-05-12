@@ -183,3 +183,8 @@ static HashTable parserFunctionTable = {
 static HashTable parserTypeTable = {
 	.usePrimitiveHasher = 0,
 };
+
+static HashTable parser_reserved_keywords = {
+	.usePrimitiveHasher = 0,
+};
+

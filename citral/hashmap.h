@@ -158,6 +158,7 @@ static void resize_hashtable(HashTable* tbl, unsigned int newSize) {
 			internal_insert_into_hashtable(tbl_p, cur.key, cur.val, cur.keySize, cur.valSize, cur.keyType, cur.valType);
 		}
 	}
+	free(tbl->nodes);
 	tbl->nodes = new_nodes;
 	tbl->maxNodes = new_amt / sizeof(HashNode); //this gets optimized away probably
 }

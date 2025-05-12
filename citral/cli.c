@@ -111,7 +111,7 @@ void tests() {
 
 int main() {
 	while (1) {
-		printf("Type \"test\" to perform all tests.\nType \"repl\" to enter the repl.\nType \"file\" followed by a file path to load said file\n");
+		printf("Type \"test\" to perform all tests.\nType \"repl\" to enter the repl.\nType \"file\" followed by a file path to load said file\nType \"stress\" to perform tests repeatedly\n");
 		char* str = cli_get_str();
 		if (!strcmp(str, "test")) {
 			tests();
@@ -123,6 +123,11 @@ int main() {
 		}
 		else if (!strcmp(str, "file")) {
 			printf("Unimplemented.\n");
+		}
+		else if (!strcmp(str, "stress")) {
+			for (;;) {
+				tests();
+			}
 		}
 	}
 	repl();
