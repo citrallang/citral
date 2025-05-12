@@ -318,6 +318,7 @@ void parser_cleanup(ParserState* state) {
 	free(parser_reserved_keywords.nodes);
 	parserStarted = 0;
 	free(state->program);
+	free(state);
 }
 
 //0: failure
