@@ -287,7 +287,7 @@ void scanner_print_token(ScannerToken tok) {
 		break;
 	}
 	}
-	printf("Line %d\t%.*s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc);
+	printf("Line %d\t%.*s\t%s\n", tok.line, (unsigned int)tok.numChars, tok.posInSrc, TOKEN_NAMES[tok.type]);
 }
 
 int scanner_is_alpha(char isThis) {

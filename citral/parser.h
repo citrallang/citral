@@ -154,6 +154,7 @@ AstNode parser_scan_token(ParserState* state);
 ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
 void parser_initialize();
+void parser_uninitialize();
 void parser_cleanup(ParserState* state);
 void parser_start_for(ParserState* state);
 uint8_t parser_expect_tok(ParserState* state, TokenType tok);

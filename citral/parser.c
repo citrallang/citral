@@ -212,6 +212,10 @@ void parser_initialize() {
 	parserFunctionTable.numNodes = 0;
 }
 
+void parser_uninitialize() {
+	
+}
+
 AstType parser_what_is_identifier(char* identifier, int len) {
 	ParserKeyword* kw = hashtable_lookup_string_ptr(&parser_reserved_keywords, identifier, len);
 	if (kw == NULL)
@@ -231,7 +235,13 @@ ParserType parser_what_is_type(char* typeName, int len) {
 }
 
 ScannerToken parser_advance(ParserState* state) {
+#ifdef SCANNER_DEBUG
+	ScannerToken next = scanner_next_token(state->encompassingScanner);
+	scanner_print_token(next);
+	return next;
+#else
 	return scanner_next_token(state->encompassingScanner);
+#endif
 }
 	
 
@@ -422,7 +432,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 		case TOKEN_IDENTIFIER: {
 			ParserType type = parser_what_is_type(tok.posInSrc, tok.numChars);
 			
-			if (type.type != TOKEN_NOTHING) {
+			if (type.type != PTYPE_NOTHING) {
 				ScannerToken tok = parser_advance(state);
 				if (parser_is_legitimate_identifier(state, tok)) {
 					ScannerToken commaOrClose = parser_advance(state);
@@ -431,7 +441,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 						goto parser_decl_finished;
 					}
 					if (commaOrClose.type != TOKEN_COMMA) {
-						parser_error(state, "Expected ',' after function argument.");
+						parser_error(state, "Expected ',' or ')' after function argument.");
 						return;
 					}
 				}
@@ -440,8 +450,22 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 					return;
 				}
 			}
+			else {
+				ScannerToken commaOrClose = parser_advance(state);
+				if (commaOrClose.type == TOKEN_CLOSEPAREN) {
+					parser_push_argument_onto_function(&decl, type);
+					goto parser_decl_finished;
+				}
+				if (commaOrClose.type != TOKEN_COMMA) {
+					parser_error(state, "Expected ',' or ')' after function argument.");
+					return;
+				}
+			}
 			parser_push_argument_onto_function(&decl, type);
 			break;
+		}
+		case TOKEN_COMMA: {
+			goto parser_decl_finished;
 		}
 		default: {
 			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
@@ -465,19 +489,25 @@ void parser_print_declarations() {
 		ParserFunctionDeclaration* node = parserFunctionTable.nodes[i].val.asPtr;
 		if (node != NULL) {
 			if (node->nargs == 1) {
-				printf("Function %.*s has argument %.*s. ", node->identLen, node->identifier, node->args[0].nameLen, node->args[0].name);
+				if (node->args[0].name == NULL)
+					printf("Function %.*s has argument [INFERRED]. ", node->identLen, node->identifier);
+				else
+					printf("Function %.*s has argument %.*s. ", node->identLen, node->identifier, node->args[0].nameLen, node->args[0].name);
 			}
 			else if (node->nargs > 1) {
 				printf("Function %.*s has arguments ", node->identLen, node->identifier);
 				for (int k = 0; k < node->nargs - 1; k++) {
 					if (node->args[k].name == NULL) {
-						printf("inferred, ");
+						printf("[INFERRED], ");
 					}
 					else {
 						printf("%.*s ", node->args[k].nameLen, node->args[k].name);
 					}
 				}
-				printf("and %.*s. ", node->args[node->nargs - 1].nameLen, node->args[node->nargs - 1].name);
+				if (node->args[node->nargs - 1].name == NULL)
+					printf("and [INFERRED]. ");
+				else
+					printf("and %.*s. ", node->args[node->nargs - 1].nameLen, node->args[node->nargs - 1].name);
 			}
 			else
 				printf("Function %.*s has no arguments. ", node->identLen, node->identifier);

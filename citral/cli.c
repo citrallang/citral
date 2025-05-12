@@ -106,8 +106,7 @@ void repl() {
 }
 
 void tests() {
-	load_source("main() {return 1}", 0);
-	load_source("main(){local a = 3*5 local double b = a local c = (int)b a = 13 print(a) return a}", 0);
+	load_source("i8 main() \n i32 maintwo(i8 a) \n i64 mainthree(i16 a, float b) \n f32 mainfour(i32 k, float c, double d) \n mainfive(a, b, c)", 0);
 }
 
 int main() {

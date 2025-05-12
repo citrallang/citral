@@ -23,7 +23,7 @@ static const char* TOKEN_NAMES[] = {
 
 	"=", "==", "!", "!=", "&&", "||",
 
-	"(", ")", "[", "]", "{", "}", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR", "NOTHING",
+	"(", ")", "[", "]", "{", "}", ";", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR", "NOTHING",
 };
 
 static const char* UNEXPECTED_TOKEN[] = {
