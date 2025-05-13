@@ -176,6 +176,15 @@ void parser_print_declarations();
 void parser_print_other_err();
 void parser_add_error_message(char* msg);
 uint8_t parser_does_function_exist(ParserFunctionDeclaration* func);
+void parser_decl(ParserState* state);
+
+typedef struct ParserIdentifierInfo {
+	AstType atype;
+	ParserType ptype;
+} ParserIdentifierInfo;
+
+ParserIdentifierInfo parser_get_info(ScannerToken tok);
+
 static HashTable parserFunctionTable = {
 	.usePrimitiveHasher = 0,
 };

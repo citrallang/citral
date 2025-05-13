@@ -347,7 +347,7 @@ void parser_decl_pass(ParserState* state) {
 			ParserType ptype = parser_what_is_type(tok.posInSrc, tok.numChars);
 			switch (atype) {
 			case AST_GLOBALDECL: {
-				//todo: parse globals 
+				parser_global(state);
 				break;
 			}
 			case AST_CLASS: {
@@ -572,5 +572,24 @@ void parser_print_declarations() {
 			}
 			printf("\n");
 		}
+	}
+}
+
+ParserIdentifierInfo parser_get_info(ScannerToken tok) {
+	ParserIdentifierInfo info = {
+		.atype = parser_what_is_identifier(tok.posInSrc, tok.numChars),
+		.ptype = parser_what_is_type(tok.posInSrc, tok.numChars)
+	};
+	return info;
+}
+
+void parser_decl(ParserState* state) {
+	ScannerToken nextTok = parser_advance(state);
+	ParserIdentifierInfo info = parser_get_info(nextTok);
+	if (info.ptype.type == PTYPE_NOTHING) {
+		if (!parser_is_legitimate_identifier(state, nextTok)) {
+			parser_error(state, "Reserved keyword as variable name.");
+		}
+
 	}
 }
