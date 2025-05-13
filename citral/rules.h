@@ -4,8 +4,8 @@ Trash file. Not included in any stage of the project.
 
 
 Function names in this project are snake_case.
-Global variables and types are PascalCase.
-Local variables are camelCase.
+Types are PascalCase.
+Variables are camelCase.
 Constants (regardless of scoping) are ALL_CAPS snake case.
 Internal components/functions are prefixed with _ or "internal".
 
