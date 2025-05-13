@@ -150,10 +150,9 @@ void parser_initialize() {
 	if (parserStarted) {
 		return;
 	}
-	parser_reserved_keywords.nodes = xmalloc(sizeof(HashNode) * 16);
-	parser_reserved_keywords.maxNodes = 16;
+	parser_reserved_keywords.nodes = xmalloc(sizeof(HashNode) * 32);
+	parser_reserved_keywords.maxNodes = 32;
 
-	printf("initializing\n");
 	parserStarted = 1;
 	parser_add_str("for", AST_FOR);
 	parser_add_str("foreach", AST_FOREACH);
@@ -167,8 +166,8 @@ void parser_initialize() {
 	parser_add_str("else", AST_ELSE);
 	parser_add_str("elseif", AST_ELSEIF);
 
-	parserTypeTable.nodes = xmalloc(sizeof(HashNode) * 16);
-	parserTypeTable.maxNodes = 16;
+	parserTypeTable.nodes = xmalloc(sizeof(HashNode) * 32);
+	parserTypeTable.maxNodes = 32;
 	parserTypeTable.numNodes = 0;
 	
 
@@ -188,8 +187,8 @@ void parser_initialize() {
 	parser_add_type("uchar", PTYPE_U8);
 	parser_add_type("void", PTYPE_VOID);
 
-	parserFunctionTable.nodes = xmalloc(sizeof(HashNode) * 8);
-	parserFunctionTable.maxNodes = 8;
+	parserFunctionTable.nodes = xmalloc(sizeof(HashNode) * 32);
+	parserFunctionTable.maxNodes = 32;
 	parserFunctionTable.numNodes = 0;
 }
 
@@ -349,12 +348,18 @@ void parser_decl_pass(ParserState* state) {
 			switch (atype) {
 			case AST_GLOBALDECL: {
 				//todo: parse globals 
+				break;
 			}
 			case AST_CLASS: {
 				//todo: parse classes
+				break;
 			}
 			case AST_IMPORT: {
 				//todo: parse imports
+				break;
+			}
+			case AST_IDENTIFIER: {
+				break;
 			}
 			default: {
 				parser_error(state, "Unexpected token in top scope.");
