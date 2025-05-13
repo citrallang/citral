@@ -9,7 +9,7 @@ typedef enum AstConstant {
 
 typedef enum AstType {
 	//statements
-	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_ELSE, AST_ELSEIF, AST_SWITCH, AST_CASE, AST_LOOP, AST_RETURN, AST_IMPORT,
+	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_ELSE, AST_ELSEIF, AST_SWITCH, AST_CASE, AST_LOOP, AST_RETURN,
 
 	//expression statements
 	AST_MODIFY, AST_LOCALDECL, AST_GLOBALDECL,
@@ -21,7 +21,8 @@ typedef enum AstType {
 	//resultant arithmetic
 	AST_PLUS, AST_MINUS, AST_TIMES, AST_DIV, AST_MOD, AST_POW,
 
-
+	//special statements
+	AST_CLASS, AST_IMPORT,
 
 	AST_BLOCK,
 

@@ -346,8 +346,19 @@ void parser_decl_pass(ParserState* state) {
 		case TOKEN_IDENTIFIER: {
 			AstType atype = parser_what_is_identifier(tok.posInSrc, tok.numChars);
 			ParserType ptype = parser_what_is_type(tok.posInSrc, tok.numChars);
-			if (atype != AST_IDENTIFIER) {
-				goto pdeclpasscontinue;
+			switch (atype) {
+			case AST_GLOBALDECL: {
+				//todo: parse globals 
+			}
+			case AST_CLASS: {
+				//todo: parse classes
+			}
+			case AST_IMPORT: {
+				//todo: parse imports
+			}
+			default: {
+				parser_error(state, "Unexpected token in top scope.");
+			}
 			}
 			switch (ptype.type) {
 			case PTYPE_NOTHING: {
