@@ -99,40 +99,11 @@ void parser_evaluate(ParserState* state) {
 #ifdef PARSER_DEBUG
 	parser_print_declarations();
 #endif
-//	ScannerToken tok;
-//	for (;;) {
-//		tok = parser_advance(state);
-//#ifdef SCANNER_DEBUG
-//		scanner_print_token(tok);
-//#endif
-//		switch (tok.type) {
-//		case TOKEN_EOF:
-//			goto exit_parser_evaluate;
-//		case TOKEN_IDENTIFIER: {
-//			int chars = tok.numChars;
-//			char* pos = tok.posInSrc;
-//			AstType typeOfIdentifier = parser_what_is_identifier(pos, chars);
-//			//if, for, break, return, variable, etc
-//			switch (typeOfIdentifier)
-//			{
-//			case AST_IDENTIFIER: {
-//				parser_error(state, "Expected statement, found identifier.");
-//				break;
-//			}
-//			case AST_FOR: {
-//				parser_start_for(state);
-//				break;
-//			}
-//			default:{}
-//			}
-//			break;
-//		}
-//		default: {
-//			parser_error(state, UNEXPECTED_TOKEN[tok.type]);
-//		}
-//		}
-//	}
-//	exit_parser_evaluate:;
+	//todo: parse imports
+
+
+
+	//todo: parse function definitions
 }
 
 
@@ -358,6 +329,7 @@ AstNode* parser_expression(ParserState* state) {
 	 
 }
 
+//todo: parse things like classes and type declarations here
 void parser_decl_pass(ParserState* state) {
 	uint8_t scopeLevel = 0;
 	for (;;) {
