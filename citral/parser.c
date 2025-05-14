@@ -583,13 +583,3 @@ ParserIdentifierInfo parser_get_info(ScannerToken tok) {
 	return info;
 }
 
-void parser_decl(ParserState* state) {
-	ScannerToken nextTok = parser_advance(state);
-	ParserIdentifierInfo info = parser_get_info(nextTok);
-	if (info.ptype.type == PTYPE_NOTHING) {
-		if (!parser_is_legitimate_identifier(state, nextTok)) {
-			parser_error(state, "Reserved keyword as variable name.");
-		}
-
-	}
-}
