@@ -580,6 +580,7 @@ ParserIdentifierInfo parser_get_info(ParserState* state, ScannerToken tok) {
 	return info;
 }
 
+
 void parser_global(ParserState* state) {
 	ScannerToken typeTok;
 	ScannerToken nameTok;
@@ -598,10 +599,11 @@ void parser_global(ParserState* state) {
 			typeTok = _;
 			ParserIdentifierInfo t = {
 				.atype = AST_NOP,
-				.ptype = PTYPE_NOTHING,
+				.ptype = {
+					.type = PTYPE_NOTHING
+				}
 			};
 			typeInfo = t;
-			// help i dont know how to turn off C89 mode
 		}
 		else {
 			nameTok = parser_advance(state);
