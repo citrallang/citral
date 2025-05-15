@@ -236,7 +236,7 @@ AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal) {
 	return node;
 }
 
-void __parser_free_node(AstNode* node) {
+static void __parser_free_node(AstNode* node) {
 	if (node == NULL) return;
 	__parser_free_node(node->left);
 	__parser_free_node(node->right);
@@ -449,13 +449,12 @@ uint8_t parser_does_function_exist(ParserFunctionDeclaration* func) {
 
 //precon: the type, name, and opening parentheses have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
 void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName) {
-	ParserType type;
-	if (tokType.type == TOKEN_NOTHING) {
-		type.type = PTYPE_NOTHING;
-	}
-	else {
+	ParserType type = {
+		.type = PTYPE_NOTHING
+	};
+	if (tokType.type != TOKEN_NOTHING) {
 		type = parser_what_is_type(state, tokType.posInSrc, tokType.numChars);
-		if (type.type == TOKEN_NOTHING) {
+		if (type.type == PTYPE_NOTHING) {
 			parser_error(state, "Given return type is not actually a type");
 			return;
 		}
