@@ -54,7 +54,7 @@ static HashNode hashtable_lookup_string(HashTable* tbl, char* str, unsigned int 
 //todo
 static long hash_str(char* str, unsigned int len) {
 	long hash = 0;
-	for (int i = 0; i < len; i++) {
+	for (unsigned int i = 0; i < len; i++) {
 		hash <<= 7;
 		hash += (str[i]*13);
 	}
@@ -142,7 +142,7 @@ static unsigned int internal_insert_into_hashtable(HashTable* tbl, HashKeyVal ke
 	};
 	tbl->nodes[firstSlot] = t;
 	if (++(tbl->numNodes) > tbl->maxNodes * 0.6) {
-		resize_hashtable(tbl, tbl->maxNodes * 1.5);
+		resize_hashtable(tbl, (unsigned int)(tbl->maxNodes * 1.5));
 	}
 	return firstSlot;
 }
@@ -157,7 +157,7 @@ static void resize_hashtable(HashTable* tbl, unsigned int newSize) {
 		.usePrimitiveHasher = tbl->usePrimitiveHasher
 	};
 	HashTable* tbl_p = &newtbl;
-	for (int i = 0; i < tbl->maxNodes; i++) {
+	for (unsigned int i = 0; i < tbl->maxNodes; i++) {
 		HashNode cur = tbl->nodes[i];
 		if (cur.isFull) {
 			internal_insert_into_hashtable(tbl_p, cur.key, cur.val, cur.keySize, cur.valSize, cur.keyType, cur.valType);
@@ -165,7 +165,7 @@ static void resize_hashtable(HashTable* tbl, unsigned int newSize) {
 	}
 	free(tbl->nodes);
 	tbl->nodes = new_nodes;
-	tbl->maxNodes = new_amt / sizeof(HashNode); //this gets optimized away probably
+	tbl->maxNodes = (unsigned int)(new_amt / sizeof(HashNode)); //this gets optimized away probably
 }
 
 static HashKeyVal internal_remove_from_hashtable(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
