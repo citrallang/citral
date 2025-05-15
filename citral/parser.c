@@ -15,11 +15,8 @@ ParserState* parser_create_state(ScannerState* encompassing) {
 	return state;
 }
 
-ParserState* parser_evaluate_scanner(ScannerState* scState) {
-
-}
 static char* otherErrMsg;
-void parser_print_other_err() {
+void parser_print_other_err(void) {
 	if (otherErrMsg)
 		fprintf(stderr, "%s", otherErrMsg);
 }
@@ -94,7 +91,6 @@ void parser_warn(ParserState* state, char* msg) {
 
 void parser_evaluate(ParserState* state) {
 	parser_initialize();
-	ScannerToken tok;
 	parser_decl_pass(state);
 #ifdef PARSER_DEBUG
 	parser_print_declarations();
@@ -116,7 +112,7 @@ void parser_add_keyword_to_list(ParserKeyword word) {
 void parser_add_str(char* literal, AstType type) {
 	ParserKeyword word = {
 		.literal = literal,
-		.literalLen = strlen(literal),
+		.literalLen = (unsigned int)strlen(literal),
 		.whatAreYou = type
 	};
 	parser_add_keyword_to_list(word);
@@ -132,7 +128,7 @@ void parser_add_type(char* literal, ParserTypesE etype) {
 	ParserType type = {
 		.type = etype,
 		.name = literal,
-		.nameLen = strlen(literal)
+		.nameLen = (unsigned int)strlen(literal)
 	};
 	parser_add_full_type(type);
 }
@@ -325,7 +321,7 @@ void parser_start_for(ParserState* state) {
 }
 
 AstNode* parser_expression(ParserState* state) {
-	 
+	return NULL;
 }
 
 //todo: parse things like classes and type declarations here
@@ -367,7 +363,7 @@ void parser_decl_pass(ParserState* state) {
 			}
 			switch (ptype.type) {
 			case PTYPE_NOTHING: {
-				if (!parser_is_legitimate_identifier(state, tok)) {
+				if (!parser_assert_legitimate_identifier(state, tok)) {
 					parser_error(state, "Illegitimate identifier.");
 					goto pdeclpasscontinue;
 				}
@@ -392,7 +388,7 @@ void parser_decl_pass(ParserState* state) {
 					parser_error(state, UNEXPECTED_TOKEN[name.type]);
 					goto pdeclpasscontinue;
 				}
-				if (!parser_is_legitimate_identifier(state, name)) {
+				if (!parser_assert_legitimate_identifier(state, name)) {
 					parser_error(state, "Illegitimate identifier.");
 				}
 				if (parser_expect_tok(state, TOKEN_OPENPAREN))
@@ -427,7 +423,7 @@ void parser_import(ParserState* state) {
 }
 
 //0: illegitimate
-uint8_t parser_is_legitimate_identifier(ParserState* state, ScannerToken tok) {
+uint8_t parser_assert_legitimate_identifier(ParserState* state, ScannerToken tok) {
 	AstType type = parser_what_is_identifier(tok.posInSrc, tok.numChars);
 	if (type != AST_IDENTIFIER) {
 		return 0;
@@ -447,7 +443,8 @@ void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserT
 }
 
 uint8_t parser_does_function_exist(ParserFunctionDeclaration* func) {
-
+	//TODO
+	return 0;
 }
 
 //precon: the type, name, and opening parentheses have been consumed. if type.type == TOKEN_NOTHING, the function is assumed to have a "void" return type (which can change if a clear return type is established)
@@ -470,7 +467,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 	}
 	ParserFunctionDeclaration decl = {
 		.identifier = tokName.posInSrc,
-		.identLen = tokName.numChars,
+		.identLen = (unsigned int)tokName.numChars,
 		.retType = type,
 		.args = xmalloc(sizeof(ParserType) * 4),
 		.maxArgs = 4,
@@ -486,7 +483,7 @@ void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName)
 			
 			if (type.type != PTYPE_NOTHING) {
 				ScannerToken tok = parser_advance(state);
-				if (parser_is_legitimate_identifier(state, tok)) {
+				if (parser_assert_legitimate_identifier(state, tok)) {
 					ScannerToken commaOrClose = parser_advance(state);
 					if (commaOrClose.type == TOKEN_CLOSEPAREN) {
 						parser_push_argument_onto_function(&decl, type);
@@ -583,3 +580,50 @@ ParserIdentifierInfo parser_get_info(ScannerToken tok) {
 	return info;
 }
 
+void parser_global(ParserState* state) {
+	ScannerToken typeTok;
+	ScannerToken nameTok;
+	ParserIdentifierInfo typeInfo;
+	ParserIdentifierInfo nameInfo;
+	{
+		ScannerToken nextTok = parser_advance(state);
+		ParserIdentifierInfo info = parser_get_info(nextTok);
+		if (info.ptype.type == PTYPE_NOTHING) {
+			//implicit value
+			nameTok = nextTok;
+			nameInfo = info;
+			ScannerToken _ = {
+				.type = TOKEN_NOTHING
+			};
+			typeTok = _;
+			ParserIdentifierInfo __ = {
+				.atype = AST_NOP,
+				.ptype = PTYPE_NOTHING,
+			};
+			typeInfo = __;
+			// help i dont know how to turn off C89 mode
+		}
+		else {
+			nameTok = parser_advance(state);
+			typeInfo = info;
+			typeTok = nextTok;
+			nameInfo = parser_get_info(nameTok);
+		}
+	}
+	if (!parser_assert_legitimate_identifier(state, nameTok)) {
+		parser_error(state, "Illegal variable name.");
+	}
+
+	ScannerToken nextTok = parser_advance(state);
+	switch (nextTok.type) {
+	case TOKEN_EQ: {
+
+	}
+	case TOKEN_SEMICOLON: {
+		break;
+	}
+	default: {
+
+	}
+	}
+}

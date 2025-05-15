@@ -4,13 +4,13 @@
 #include "config.h"
 #include "parser.h"
 
-char* cli_get_str() {
+char* cli_get_str(void) {
 	char* buf = xmalloc(16);
 	size_t bufSize = 16;
 	size_t posInBuf = 0;
 	char c;
 	for (;;) {
-		c = fgetc(stdin);
+		c = (char)fgetc(stdin);
 		if (c == '\n') {
 			xxrealloc(&buf, posInBuf + 1);
 			buf[posInBuf] = 0;

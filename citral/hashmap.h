@@ -19,6 +19,7 @@ typedef enum HashValType {
 typedef struct HashNode {
 	HashKeyVal key;
 	long hash;
+	int _PAD;
 	HashKeyVal val;
 	unsigned int keySize; //these can be used for additional info if the type bits are set to the non pointer values
 	unsigned int valSize;
@@ -26,6 +27,7 @@ typedef struct HashNode {
 	unsigned int valType : 2;
 	unsigned int isGrave : 1;
 	unsigned int isFull : 1;
+	long _PAD2;
 } HashNode;
 
 typedef struct HashTable {
@@ -33,10 +35,11 @@ typedef struct HashTable {
 	unsigned int numNodes;
 	unsigned int maxNodes;
 	unsigned int usePrimitiveHasher : 1;
+	long _PAD;
 } HashTable;
 
 static long hash_str(char*, unsigned int);
-static HashTable* spawn_hashtable();
+static HashTable* spawn_hashtable(void);
 static void free_hashtable(HashTable*);
 static unsigned int internal_insert_into_hashtable(HashTable*, HashKeyVal, HashKeyVal, unsigned int, unsigned int, HashValType, HashValType);
 static HashKeyVal internal_remove_from_hashtable(HashTable*, HashKeyVal, unsigned int);
@@ -81,6 +84,8 @@ static long get_hash(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
 static unsigned int internal_get_pos_of_element(HashTable* tbl, HashKeyVal key, unsigned int keySize) {
 	if (!tbl->usePrimitiveHasher)
 		return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash_str(key.asPtr, keySize));
+	else
+		return 0;
 	//else
 		//return internal_get_pos_of_element_with_hash(tbl, key, keySize, hash_str(key.asPtr, keySize));
 }

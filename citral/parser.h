@@ -146,12 +146,8 @@ typedef struct ParserFunctionDeclaration {
 AstNode parser_create_node(AstType type);
 AstNode parser_create_node_literal(AstType type, AstLiteralUnion literal);
 ParserState* parser_create_state(ScannerState* encompassing);
-ParserState* parser_evaluate_scanner(ScannerState* scState);
 void parser_evaluate(ParserState* state);
-void parser_evaluate_ast_node(ParserState* state, AstNode* node);
 void parser_error(ParserState* state, char* msg);
-void parser_warn(ParserState* state, char* msg);
-AstNode parser_scan_token(ParserState* state);
 ScannerToken parser_advance(ParserState* state);
 AstType parser_what_is_identifier(char* identifier, int len);
 void parser_initialize();
@@ -162,21 +158,19 @@ uint8_t parser_expect_tok(ParserState* state, TokenType tok);
 AstType parser_get_next_identifier(ParserState* state);
 AstNode* parser_expression(ParserState* state);
 void parser_decl_pass(ParserState* state);
-void parser_import_pass(ParserState* state);
-void parser_definition_pass(ParserState* state);
 void parser_add_full_type(ParserType type);
 void parser_add_type(char* literal, ParserTypesE etype);
 void parser_import(ParserState* state);
 ParserType parser_what_is_type(char* typeName, int len);
 void parser_declare_function(ParserFunctionDeclaration func);
-uint8_t parser_is_legitimate_identifier(ParserState* state, ScannerToken tok);
+uint8_t parser_assert_legitimate_identifier(ParserState* state, ScannerToken tok);
 void parser_push_argument_onto_function(ParserFunctionDeclaration* func, ParserType type);
 void parser_decl(ParserState* state, ScannerToken tokType, ScannerToken tokName);
 void parser_print_declarations();
 void parser_print_other_err();
 void parser_add_error_message(char* msg);
 uint8_t parser_does_function_exist(ParserFunctionDeclaration* func);
-
+void parser_global(ParserState* state);
 typedef struct ParserIdentifierInfo {
 	AstType atype;
 	ParserType ptype;
@@ -184,6 +178,9 @@ typedef struct ParserIdentifierInfo {
 
 ParserIdentifierInfo parser_get_info(ScannerToken tok);
 
+
+//todo: attach these to parserState
+//i just dont feel like it atm
 static HashTable parserFunctionTable = {
 	.usePrimitiveHasher = 0,
 };

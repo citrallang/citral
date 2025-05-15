@@ -46,6 +46,7 @@ typedef struct ScannerState {
 	size_t bufCapacity;
 	char* cur;
 	int curLine;
+	long _PAD;
 	ScannerToken* tokBuf;
 	size_t numToks;
 	size_t toksCapacity;
