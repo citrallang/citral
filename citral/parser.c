@@ -5,7 +5,6 @@
 #include "hashmap.h"
 #include "config.h"
 
-int parserStarted = 0;
 
 ParserState* parser_create_state(ScannerState* encompassing) {
 	ParserState* state = xmalloc(sizeof(ParserState));
@@ -262,7 +261,7 @@ void parser_cleanup(ParserState* state) {
 		}
 	}
 	free(state->functions->nodes);
-	
+	free(state->functions);
 
 	for (unsigned int i = 0; i < state->types->maxNodes; i++) {
 		if (state->types->nodes[i].isFull) {
@@ -272,7 +271,7 @@ void parser_cleanup(ParserState* state) {
 		}
 	}
 	free(state->types->nodes);
-
+	free(state->types);
 	for (unsigned int i = 0; i < state->keywords->maxNodes; i++) {
 		if (state->keywords->nodes[i].isFull) {
 			free(state->keywords->nodes[i].val.asPtr);
@@ -282,7 +281,7 @@ void parser_cleanup(ParserState* state) {
 	}
 	
 	free(state->keywords->nodes);
-	parserStarted = 0;
+	free(state->keywords);
 	free(state->program);
 	free(state);
 }
