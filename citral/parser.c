@@ -331,6 +331,7 @@ void parser_start_for(ParserState* state) {
 //recursively call, only accept operations with lower precedence shoutout pratt my goat
 AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	AstNode* top = newAstNode();
+	AstNode* final = NULL;
 	ScannerToken nextTok = parser_advance(state);
 	AstType type = AST_NOP;
 	switch (nextTok.type) {
@@ -368,14 +369,18 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	if (precedence > maxPrecedence) {
 		return NULL;
 	}
-	
+	top->type = type;
 	switch (type) {
 	case AST_UNARY_MINUS: {
-		
-	}
+		top->left = parser_begin_expression(state, precedence);
+		final = parser_inner_expression(state, 255, top);
+		if (final == 0)
+			final = top;
 	}
 
-	return NULL;
+	}
+	
+	return final;
 }
 
 //todo: parse things like classes and type declarations here
