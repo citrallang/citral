@@ -9,7 +9,7 @@ typedef enum AstConstant {
 
 typedef enum AstType {
 	//statements
-	AST_WHILE, AST_FOR, AST_FOREACH, AST_IF, AST_ELSE, AST_ELSEIF, AST_SWITCH, AST_CASE, AST_LOOP, AST_RETURN,
+	AST_WHILE=0, AST_FOR, AST_FOREACH, AST_IF, AST_ELSE, AST_ELSEIF, AST_SWITCH, AST_CASE, AST_LOOP, AST_RETURN,
 
 	//expression statements
 	AST_MODIFY, AST_LOCALDECL, AST_GLOBALDECL,
@@ -74,6 +74,8 @@ typedef struct ParserState {
 	struct ParserFunctionDeclaration* funcs;
 	int numFuncs;
 	int maxFuncs;
+
+	int precedenceTable[64];
 
 	unsigned int hadError : 1;
 } ParserState;
@@ -162,7 +164,9 @@ void parser_cleanup(ParserState* state);
 void parser_start_for(ParserState* state);
 uint8_t parser_expect_tok(ParserState* state, TokenType tok);
 AstType parser_get_next_identifier(ParserState* state);
-AstNode* parser_expression(ParserState* state);
+AstNode* parser_begin_expression(ParserState* state, int maxPrecedence);
+AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode* left);
+
 void parser_decl_pass(ParserState* state);
 void parser_add_full_type(ParserState* state, ParserType type);
 void parser_add_type(ParserState* state, char* literal, ParserTypesE etype);

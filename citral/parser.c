@@ -142,6 +142,15 @@ AstType parser_get_next_identifier(ParserState* state) {
 
 
 void parser_initialize(ParserState* state) {
+	state->precedenceTable[AST_UNARY_MINUS] = 3;
+	state->precedenceTable[AST_NUMBER] = 1;
+	state->precedenceTable[AST_STRING] = 1;
+	state->precedenceTable[AST_PLUS] = 6;
+	state->precedenceTable[AST_MINUS] = 6;
+	state->precedenceTable[AST_TIMES] = 7;
+	state->precedenceTable[AST_DIV] = 7;
+	state->precedenceTable[AST_MOD] = 7;
+
 	state->functions = xmalloc(sizeof(HashTable));
 	state->keywords = xmalloc(sizeof(HashTable));
 	state->types = xmalloc(sizeof(HashTable));
@@ -320,9 +329,8 @@ void parser_start_for(ParserState* state) {
 }
 #define newAstNode() (AstNode*)xmalloc(sizeof(AstNode))
 //recursively call, only accept operations with lower precedence shoutout pratt my goat
-AstNode* parser_expression(ParserState* state, int precedence) {
+AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	AstNode* top = newAstNode();
-	top->type = AST_EXPRESSION;
 	ScannerToken nextTok = parser_advance(state);
 	AstType type = AST_NOP;
 	switch (nextTok.type) {
@@ -351,12 +359,19 @@ AstNode* parser_expression(ParserState* state, int precedence) {
 	}
 	}
 
-
+	int precedence = state->precedenceTable[type];
+	if (precedence == 0) {
+		parser_add_error_message(" in expression.");
+		parser_error(state, UNEXPECTED_TOKEN[nextTok.type]);
+		return NULL;
+	}
+	if (precedence > maxPrecedence) {
+		return NULL;
+	}
+	
 	switch (type) {
-		//upper nodes first (prefix operators, groupings)
 	case AST_UNARY_MINUS: {
-		AstNode* n1 = newAstNode();
-
+		
 	}
 	}
 
