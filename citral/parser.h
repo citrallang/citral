@@ -24,7 +24,10 @@ typedef enum AstType {
 	//special statements
 	AST_CLASS, AST_IMPORT,
 
-	AST_BLOCK,
+	//prefix operators
+	AST_UNARY_MINUS, AST_UNARY_NOT,
+
+	AST_BLOCK, AST_GROUPING, AST_EXPRESSION,
 
 	AST_ERROR, AST_NULL, AST_NOP, AST_EOF,
 } AstType;

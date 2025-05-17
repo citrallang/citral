@@ -295,31 +295,71 @@ uint8_t parser_expect_tok(ParserState* state, TokenType tok) {
 }
 
 void parser_start_for(ParserState* state) {
-	if (parser_expect_tok(state, TOKEN_OPENPAREN)) {
-		if (parser_get_next_identifier(state) == AST_LOCALDECL) {
-			if (parser_get_next_identifier(state) == AST_IDENTIFIER) {
-				if (parser_expect_tok(state, TOKEN_EQ)) {
-					//TODO: PARSE EXPRESSION HERE
-				}
-				else {
-					parser_error(state, "Expected '=' after 'for (local IDENTIFIER '");
-				}
-			}
-			else {
-				parser_error(state, "Expected identifier after 'for (local '");
-			}
-		}
-		else 
-			if (!parser_expect_tok(state, TOKEN_SEMICOLON))
-				parser_error(state, "Expected 'local' or ';' after 'for ('");
+	//if (parser_expect_tok(state, TOKEN_OPENPAREN)) {
+	//	if (parser_get_next_identifier(state) == AST_LOCALDECL) {
+	//		if (parser_get_next_identifier(state) == AST_IDENTIFIER) {
+	//			if (parser_expect_tok(state, TOKEN_EQ)) {
+	//				
+	//			}
+	//			else {
+	//				parser_error(state, "Expected '=' after 'for (local IDENTIFIER '");
+	//			}
+	//		}
+	//		else {
+	//			parser_error(state, "Expected identifier after 'for (local '");
+	//		}
+	//	}
+	//	else 
+	//		if (!parser_expect_tok(state, TOKEN_SEMICOLON))
+	//			parser_error(state, "Expected 'local' or ';' after 'for ('");
+
+	//}
+	//else {
+	//	parser_error(state, "Expected '(' after 'for'");
+	//};
+}
+#define newAstNode() (AstNode*)xmalloc(sizeof(AstNode))
+//recursively call, only accept operations with lower precedence shoutout pratt my goat
+AstNode* parser_expression(ParserState* state, int precedence) {
+	AstNode* top = newAstNode();
+	top->type = AST_EXPRESSION;
+	ScannerToken nextTok = parser_advance(state);
+	AstType type = AST_NOP;
+	switch (nextTok.type) {
+	case TOKEN_INT: 
+	case TOKEN_FLOAT: 
+	{
+		type = AST_NUMBER;
+		break;
+	}
+	case TOKEN_IDENTIFIER: {
+		ParserIdentifierInfo info = parser_get_info(state, nextTok);
+		type = info.atype;
+		break;
+	}
+	case TOKEN_MINUS: {
+		type = AST_UNARY_MINUS;
+		break;
+	}
+	case TOKEN_BANG: {
+		type = AST_UNARY_NOT;
+		break;
+	}
+	case TOKEN_OPENPAREN: {
+		type = AST_GROUPING;
+		break;
+	}
+	}
+
+
+	switch (type) {
+		//upper nodes first (prefix operators, groupings)
+	case AST_UNARY_MINUS: {
+		AstNode* n1 = newAstNode();
 
 	}
-	else {
-		parser_error(state, "Expected '(' after 'for'");
-	};
-}
+	}
 
-AstNode* parser_expression(ParserState* state) {
 	return NULL;
 }
 
