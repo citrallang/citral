@@ -92,7 +92,7 @@ void parser_evaluate(ParserState* state) {
 	parser_initialize(state);
 	parser_decl_pass(state);
 #ifdef PARSER_DEBUG
-	parser_print_declarations();
+	parser_print_declarations(state);
 #endif
 	//todo: parse imports
 
@@ -155,6 +155,7 @@ void parser_initialize(ParserState* state) {
 	state->functions = xmalloc(sizeof(HashTable));
 	state->keywords = xmalloc(sizeof(HashTable));
 	state->types = xmalloc(sizeof(HashTable));
+	state->globals = spawn_hashtable();
 
 	state->keywords->nodes = xmalloc(sizeof(HashNode) * 32);
 	state->keywords->maxNodes = 32;
@@ -329,47 +330,26 @@ void parser_start_for(ParserState* state) {
 	//};
 }
 #define newAstNode() (AstNode*)xmalloc(sizeof(AstNode))
+
+AstNode* parser_expression(ParserState* state) {
+	AstNode* expr = parser_begin_expression(state, 255);
+#ifdef PARSER_DEBUG
+	parser_print_ast(state, 0, expr);
+#endif
+	return expr;
+}
+
 //recursively call, only accept operations with lower precedence shoutout pratt my goat
 AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	AstNode* top = newAstNode();
 	AstNode* final = NULL;
 	ScannerToken nextTok = parser_advance(state);
 	AstType type = scannerTokenToAstType[nextTok.type];
-	//AstType type = AST_NOP;
-	//switch (nextTok.type) {
-	//case TOKEN_INT: 
-	//{
-	//	type = AST_INTEGER;
-	//	break;
-	//}
-	//case TOKEN_FLOAT: 
-	//{
-	//	type = AST_FLOAT;
-	//	break;
-	//}
-	//case TOKEN_IDENTIFIER: {
-	//	ParserIdentifierInfo info = parser_get_info(state, nextTok);
-	//	type = info.atype;
-	//	break;
-	//}
-	//case TOKEN_MINUS: {
-	//	type = AST_UNARY_MINUS;
-	//	break;
-	//}
-	//case TOKEN_BANG: {
-	//	type = AST_UNARY_NOT;
-	//	break;
-	//}
-	//case TOKEN_OPENPAREN: {
-	//	type = AST_GROUPING;
-	//	break;
-	//}
-	//}
 
 	int precedence = state->precedenceTable[type];
 	if (precedence == 0) {
-		parser_add_error_message(" in expression.");
-		parser_error(state, UNEXPECTED_TOKEN[nextTok.type]);
+		parser_add_error_message(UNEXPECTED_TOKEN[nextTok.type]);
+		parser_error(state, " in expression.");
 		return NULL;
 	}
 	if (precedence > maxPrecedence) {
@@ -387,6 +367,9 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	case AST_INTEGER: {
 		AstNode* number = parser_get_number(state, nextTok);
 		final = parser_inner_expression(state, maxPrecedence, number);
+		if (final == NULL) {
+			final = number;
+		}
 	}
 	}
 	
@@ -395,13 +378,13 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 
 AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode* left) {
 	ScannerToken midToken = parser_advance(state);
-	int precedence = state->precedenceTable[midToken.type];
+	AstType realType = scannerTokenToAstType[midToken.type];
+	int precedence = state->precedenceTable[realType];
 	if (precedence > maxPrecedence) {
 		return NULL;
 	}
 	if (precedence == 0) {
-		parser_add_error_message(" in expression.");
-		parser_error(state, UNEXPECTED_TOKEN[midToken.type]);
+		parser_backtrack(state);
 		return NULL;
 	}
 	AstNode* middle = newAstNode();
@@ -418,12 +401,16 @@ AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode*
 			parser_error(state, "Unfinished expression");
 			return NULL;
 		}
+		else if (middle->right == (AstNode*)UINTPTR_MAX) {
+
+		}
 	}
 	}
 	if (middle == NULL) {
 		parser_error(state, "Irregular expression");
 		return NULL;
 	}
+	return middle;
 }
 
 
@@ -437,19 +424,28 @@ int max_depth(AstNode* node) {
 }
 
 void parser_print_ast(ParserState* state, int indentation, AstNode* top) {
+	if (top == NULL) {
+		return;
+	}
 	for (int i = 0; i < indentation; i++) {
 		printf("\t");
 	}
 	printf("%s", astTypeToString[top->type]);
 	switch (top->type) {
 	case AST_INTEGER: {
-		printf("%lld\n", top->literal.asI64);
+		printf("\t%lld\n", top->literal.asI64);
+		break;
 	}
 	case AST_FLOAT:
 	{
-		printf("%lf", top->literal.asDouble);
+		printf("\t%lf\n", top->literal.asDouble);
+		break;
 	}
+	default:
+		printf("\n");
 	}
+	parser_print_ast(state, indentation + 1, top->left);
+	parser_print_ast(state, indentation + 1, top->right);
 }
 
 AstNode* parser_get_number(ParserState* state, ScannerToken num) {
@@ -457,12 +453,14 @@ AstNode* parser_get_number(ParserState* state, ScannerToken num) {
 	switch (num.type) {
 	case TOKEN_INT: {
 		node->type = AST_INTEGER;
-		node->literal.asI64 = strtol(num.posInSrc, num.posInSrc + num.numChars, 10);
+		char* endPtr;
+		node->literal.asI64 = strtol(num.posInSrc, &endPtr, 10);
 		break;
 	}
 	case TOKEN_FLOAT: {
 		node->type = AST_FLOAT;
-		node->literal.asDouble = strtod(num.posInSrc, num.posInSrc + num.numChars, 10);
+		char* endPtr;
+		node->literal.asDouble = strtod(num.posInSrc, &endPtr);
 		break;
 	}
 	default: {
@@ -492,18 +490,18 @@ void parser_decl_pass(ParserState* state) {
 			switch (atype) {
 			case AST_GLOBALDECL: {
 				parser_global(state);
-				break;
+				goto pdeclpasscontinue;
 			}
 			case AST_CLASS: {
 				//todo: parse classes
-				break;
+				goto pdeclpasscontinue;
 			}
 			case AST_IMPORT: {
 				//todo: parse imports
-				break;
+				goto pdeclpasscontinue;
 			}
 			case AST_IDENTIFIER: {
-				break;
+				goto pdeclpasscontinue;
 			}
 			default: {
 				parser_error(state, "Unexpected token in top scope.");
@@ -766,13 +764,27 @@ void parser_global(ParserState* state) {
 	ScannerToken nextTok = parser_advance(state);
 	switch (nextTok.type) {
 	case TOKEN_EQ: {
-
+		AstNode* val = parser_expression(state);
+		parser_add_global(state, nameTok.posInSrc, nameTok.numChars, val);
+		break;
 	}
 	case TOKEN_SEMICOLON: {
+		parser_add_global(state, nameTok.posInSrc, nameTok.numChars, NULL);
 		break;
 	}
 	default: {
 
 	}
 	}
+}
+
+void parser_add_global(ParserState* state, char* identifier, int identLen, AstNode* value) {
+	insert_pointers_to_hashtable(state->globals, identifier, value, identLen, sizeof(AstNode));
+}
+
+void parser_backtrack(ParserState* state) {
+#ifdef PARSER_DEBUG
+	printf("SCANNER\tBACKTRACK\n");
+#endif
+	scanner_backtrack(state->encompassingScanner);
 }

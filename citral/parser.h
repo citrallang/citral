@@ -122,6 +122,7 @@ typedef struct ParserState {
 	HashTable* functions;
 	HashTable* keywords;
 	HashTable* types;
+	HashTable* globals;
 
 	struct ParserFunctionDeclaration* funcs;
 	int numFuncs;
@@ -234,6 +235,9 @@ void parser_print_other_err();
 void parser_add_error_message(char* msg);
 uint8_t parser_does_function_exist(ParserFunctionDeclaration* func);
 void parser_global(ParserState* state);
+void parser_add_global(ParserState* state, char* identifier, int identLen, AstNode* value);
+void parser_print_ast(ParserState* state, int indentation, AstNode* top);
+void parser_backtrack(ParserState* state);
 typedef struct ParserIdentifierInfo {
 	AstType atype;
 	ParserType ptype;
