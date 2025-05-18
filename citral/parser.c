@@ -411,27 +411,12 @@ AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode*
 		AstType old = middle->type;
 		middle->type = middle->right->type;
 		middle->right->type = old;
-
-		AstNode* oldLeft = middle->right->left;
-		middle->right->left = middle->left;
-		middle->left = oldLeft;
-		AstNode* oldRight = middle->right->right;
-		middle->right->right = middle->right;
-		middle->right = oldRight;
 	}
 
 	if (state->precedenceTable[middle->left->type] < precedence && (middle->left->right && middle->left->left) ) {
 		AstType old = middle->type;
 		middle->type = middle->left->type;
 		middle->left->type = old;
-
-		AstNode* oldLeft = middle->left->left;
-		middle->left->left = middle->left;
-		middle->left = oldLeft;
-
-		AstNode* oldRight = middle->left->right;
-		middle->left->right = middle->right;
-		middle->right = oldRight;
 	}
 	return middle;
 }
