@@ -332,7 +332,7 @@ void parser_start_for(ParserState* state) {
 #define newAstNode() (AstNode*)xmalloc(sizeof(AstNode))
 
 AstNode* parser_expression(ParserState* state) {
-	AstNode* expr = parser_begin_expression(state, 255);
+	AstNode* expr = parser_begin_expression(state, 255, -1);
 #ifdef PARSER_DEBUG
 	parser_print_ast(state, 0, expr);
 #endif
@@ -340,7 +340,7 @@ AstNode* parser_expression(ParserState* state) {
 }
 
 //recursively call, only accept operations with lower precedence shoutout pratt my goat
-AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
+AstNode* parser_begin_expression(ParserState* state, int maxPrecedence, int infixPrecedence) {
 	AstNode* top = newAstNode();
 	AstNode* final = NULL;
 	ScannerToken nextTok = parser_advance(state);
@@ -358,7 +358,7 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	top->type = type;
 	switch (type) {
 	case AST_UNARY_MINUS: {
-		top->left = parser_begin_expression(state, precedence);
+		top->left = parser_begin_expression(state, precedence, infixPrecedence);
 		final = parser_inner_expression(state, precedence, top);
 		if (final == 0)
 			final = top;
@@ -372,7 +372,6 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 		}
 	}
 	}
-	
 	return final;
 }
 
@@ -396,19 +395,43 @@ AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode*
 	case TOKEN_PERCENT: {
 		middle->type = scannerTokenToAstType[midToken.type];
 		middle->left = left;
-		middle->right = parser_begin_expression(state, precedence);
+		middle->right = parser_begin_expression(state, precedence, precedence);
 		if (middle->right == NULL) {
 			parser_error(state, "Unfinished expression");
 			return NULL;
-		}
-		else if (middle->right == (AstNode*)UINTPTR_MAX) {
-
 		}
 	}
 	}
 	if (middle == NULL) {
 		parser_error(state, "Irregular expression");
 		return NULL;
+	}
+
+	if (state->precedenceTable[middle->right->type] < precedence && (middle->right->right && middle->right->left)) {
+		AstType old = middle->type;
+		middle->type = middle->right->type;
+		middle->right->type = old;
+
+		AstNode* oldLeft = middle->right->left;
+		middle->right->left = middle->left;
+		middle->left = oldLeft;
+		AstNode* oldRight = middle->right->right;
+		middle->right->right = middle->right;
+		middle->right = oldRight;
+	}
+
+	if (state->precedenceTable[middle->left->type] < precedence && (middle->left->right && middle->left->left) ) {
+		AstType old = middle->type;
+		middle->type = middle->left->type;
+		middle->left->type = old;
+
+		AstNode* oldLeft = middle->left->left;
+		middle->left->left = middle->left;
+		middle->left = oldLeft;
+
+		AstNode* oldRight = middle->left->right;
+		middle->left->right = middle->right;
+		middle->right = oldRight;
 	}
 	return middle;
 }
