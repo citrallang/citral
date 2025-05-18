@@ -25,8 +25,8 @@ static const char* TOKEN_NAMES[] = {
 
 	"(", ")", "[", "]", "{", "}", ";", "STRING", "INT", "FLOAT", "IDENTIFIER", "CHAR", "END OF FILE", "START OF FILE", "ERROR", "NOTHING",
 };
-
-static const char* UNEXPECTED_TOKEN[] = {
+#define UNEXPECTED_TOKEN (char*)_UNEXPECTED_TOKEN
+static const char* _UNEXPECTED_TOKEN[] = {
 	"Unexpected token: '+'", "Unexpected token: '-'", "Unexpected token: '*'", "Unexpected token: '/'", "Unexpected token: '%'", "Unexpected token: '^'", "Unexpected token: '~'", "Unexpected token: ','",
 	"Unexpected token: '+='", "Unexpected token: '-='", "Unexpected token: '*='", "Unexpected token: '/='", "Unexpected token: '%='", "Unexpected token: '^='", "Unexpected token: '++'", "Unexpected token: '--'", 
 	"Unexpected token: '='", "Unexpected token: '=='", "Unexpected token: '!'", "Unexpected token: '!='", "Unexpected token: '&&'", "Unexpected token: '||'", 

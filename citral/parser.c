@@ -143,7 +143,8 @@ AstType parser_get_next_identifier(ParserState* state) {
 
 void parser_initialize(ParserState* state) {
 	state->precedenceTable[AST_UNARY_MINUS] = 3;
-	state->precedenceTable[AST_NUMBER] = 1;
+	state->precedenceTable[AST_INTEGER] = 1;
+	state->precedenceTable[AST_FLOAT] = 1;
 	state->precedenceTable[AST_STRING] = 1;
 	state->precedenceTable[AST_PLUS] = 6;
 	state->precedenceTable[AST_MINUS] = 6;
@@ -333,32 +334,37 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	AstNode* top = newAstNode();
 	AstNode* final = NULL;
 	ScannerToken nextTok = parser_advance(state);
-	AstType type = AST_NOP;
-	switch (nextTok.type) {
-	case TOKEN_INT: 
-	case TOKEN_FLOAT: 
-	{
-		type = AST_NUMBER;
-		break;
-	}
-	case TOKEN_IDENTIFIER: {
-		ParserIdentifierInfo info = parser_get_info(state, nextTok);
-		type = info.atype;
-		break;
-	}
-	case TOKEN_MINUS: {
-		type = AST_UNARY_MINUS;
-		break;
-	}
-	case TOKEN_BANG: {
-		type = AST_UNARY_NOT;
-		break;
-	}
-	case TOKEN_OPENPAREN: {
-		type = AST_GROUPING;
-		break;
-	}
-	}
+	AstType type = scannerTokenToAstType[nextTok.type];
+	//AstType type = AST_NOP;
+	//switch (nextTok.type) {
+	//case TOKEN_INT: 
+	//{
+	//	type = AST_INTEGER;
+	//	break;
+	//}
+	//case TOKEN_FLOAT: 
+	//{
+	//	type = AST_FLOAT;
+	//	break;
+	//}
+	//case TOKEN_IDENTIFIER: {
+	//	ParserIdentifierInfo info = parser_get_info(state, nextTok);
+	//	type = info.atype;
+	//	break;
+	//}
+	//case TOKEN_MINUS: {
+	//	type = AST_UNARY_MINUS;
+	//	break;
+	//}
+	//case TOKEN_BANG: {
+	//	type = AST_UNARY_NOT;
+	//	break;
+	//}
+	//case TOKEN_OPENPAREN: {
+	//	type = AST_GROUPING;
+	//	break;
+	//}
+	//}
 
 	int precedence = state->precedenceTable[type];
 	if (precedence == 0) {
@@ -373,14 +379,72 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	switch (type) {
 	case AST_UNARY_MINUS: {
 		top->left = parser_begin_expression(state, precedence);
-		final = parser_inner_expression(state, 255, top);
+		final = parser_inner_expression(state, maxPrecedence, top);
 		if (final == 0)
 			final = top;
 	}
-
 	}
 	
 	return final;
+}
+
+AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode* left) {
+	ScannerToken midToken = parser_advance(state);
+	int precedence = state->precedenceTable[midToken.type];
+	if (precedence > maxPrecedence) {
+		return NULL;
+	}
+	if (precedence == 0) {
+		parser_add_error_message(" in expression.");
+		parser_error(state, UNEXPECTED_TOKEN[midToken.type]);
+		return NULL;
+	}
+	AstNode* middle = newAstNode();
+	switch (midToken.type) {
+	case TOKEN_MINUS:
+	case TOKEN_PLUS:
+	case TOKEN_STAR:
+	case TOKEN_SLASH:
+	case TOKEN_PERCENT: {
+		middle->type = scannerTokenToAstType[midToken.type];
+		middle->left = left;
+		middle->right = parser_begin_expression(state, precedence);
+		if (middle->right == NULL) {
+			parser_error(state, "Unfinished expression");
+			return NULL;
+		}
+	}
+	}
+	if (middle == NULL) {
+		parser_error(state, "Irregular expression");
+		return NULL;
+	}
+}
+
+
+int max_depth(AstNode* node) {
+	if (node == NULL) {
+		return 0;
+	}
+	int first = max_depth(node->right);
+	int second = max_depth(node->left);
+	return max(first, second) + 1;
+}
+
+void parser_print_ast(ParserState* state, int indentation, AstNode* top) {
+	for (int i = 0; i < indentation; i++) {
+		printf("\t");
+	}
+	printf("%s", astTypeToString[top->type]);
+	switch (top->type) {
+	case AST_INTEGER: {
+		
+	}
+	}
+}
+
+AstNode* parser_get_number(ScannerToken num) {
+	
 }
 
 //todo: parse things like classes and type declarations here
