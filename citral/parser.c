@@ -383,6 +383,11 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 		if (final == 0)
 			final = top;
 	}
+	case AST_FLOAT:
+	case AST_INTEGER: {
+		AstNode* number = parser_get_number(state, nextTok);
+		final = parser_inner_expression(state, maxPrecedence, number);
+	}
 	}
 	
 	return final;
@@ -438,13 +443,33 @@ void parser_print_ast(ParserState* state, int indentation, AstNode* top) {
 	printf("%s", astTypeToString[top->type]);
 	switch (top->type) {
 	case AST_INTEGER: {
-		
+		printf("%lld\n", top->literal.asI64);
+	}
+	case AST_FLOAT:
+	{
+		printf("%lf", top->literal.asDouble);
 	}
 	}
 }
 
-AstNode* parser_get_number(ScannerToken num) {
-	
+AstNode* parser_get_number(ParserState* state, ScannerToken num) {
+	AstNode* node = newAstNode();
+	switch (num.type) {
+	case TOKEN_INT: {
+		node->type = AST_INTEGER;
+		node->literal.asI64 = strtol(num.posInSrc, num.posInSrc + num.numChars, 10);
+		break;
+	}
+	case TOKEN_FLOAT: {
+		node->type = AST_FLOAT;
+		node->literal.asDouble = strtod(num.posInSrc, num.posInSrc + num.numChars, 10);
+		break;
+	}
+	default: {
+		parser_error(state, "Number expected, found nothing");
+	}
+	}
+	return node;
 }
 
 //todo: parse things like classes and type declarations here

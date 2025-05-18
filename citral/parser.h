@@ -218,6 +218,7 @@ uint8_t parser_expect_tok(ParserState* state, TokenType tok);
 AstType parser_get_next_identifier(ParserState* state);
 AstNode* parser_begin_expression(ParserState* state, int maxPrecedence);
 AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode* left);
+AstNode* parser_get_number(ParserState* state, ScannerToken num);
 
 void parser_decl_pass(ParserState* state);
 void parser_add_full_type(ParserState* state, ParserType type);
