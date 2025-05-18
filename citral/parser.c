@@ -359,14 +359,14 @@ AstNode* parser_begin_expression(ParserState* state, int maxPrecedence) {
 	switch (type) {
 	case AST_UNARY_MINUS: {
 		top->left = parser_begin_expression(state, precedence);
-		final = parser_inner_expression(state, maxPrecedence, top);
+		final = parser_inner_expression(state, precedence, top);
 		if (final == 0)
 			final = top;
 	}
 	case AST_FLOAT:
 	case AST_INTEGER: {
 		AstNode* number = parser_get_number(state, nextTok);
-		final = parser_inner_expression(state, maxPrecedence, number);
+		final = parser_inner_expression(state, precedence, number);
 		if (final == NULL) {
 			final = number;
 		}
@@ -380,7 +380,7 @@ AstNode* parser_inner_expression(ParserState* state, int maxPrecedence, AstNode*
 	ScannerToken midToken = parser_advance(state);
 	AstType realType = scannerTokenToAstType[midToken.type];
 	int precedence = state->precedenceTable[realType];
-	if (precedence > maxPrecedence) {
+	if (precedence <= maxPrecedence) {
 		return NULL;
 	}
 	if (precedence == 0) {
